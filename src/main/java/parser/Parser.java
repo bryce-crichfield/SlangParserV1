@@ -45,7 +45,6 @@ public class Parser {
         Identifier identifier = Identifier.of(token.getValue().symbol());
         return ParserResult.ok(identifier, token.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Factor> parseFactor(View<Token> view) {
         ParserResult<Number> number = parseNumber(view.clone());
@@ -74,7 +73,6 @@ public class Parser {
 
         return ParserResult.error(view, "Expected factor or Number or Identifier");
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Term> parseTerm(View<Token> view) {
         ParserResult<Factor> factor = parseFactor(view.clone());
@@ -102,12 +100,11 @@ public class Parser {
 
         return ParserResult.ok(Term.of(factor.getValue()), factor.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Application> parseApplication(View<Token> view) {
+        System.out.println("Not implemented");
         return ParserResult.error(view, "Not implemented");
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Expression> parseExpression(View<Token> view) {
         ParserResult<Term> term = parseTerm(view.clone());
@@ -135,7 +132,6 @@ public class Parser {
 
         return ParserResult.ok(Expression.of(term.getValue()), term.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Block> parseBlock(View<Token> view) {
         ParserResult<Token> leftBrace = parseToken(view.clone(), TokenKind.LBRACE);
@@ -162,7 +158,6 @@ public class Parser {
         Block block = Block.of(statements);
         return ParserResult.ok(block, rightBrace.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<IfStatement> parseIfStatement(View<Token> view) {
         ParserResult<Token> ifToken = parseToken(view.clone(), TokenKind.IF);
@@ -204,7 +199,6 @@ public class Parser {
         IfStatement ifStatement = IfStatement.of(expression.getValue(), thenBlock.getValue());
         return ParserResult.ok(ifStatement, thenBlock.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<WhileStatement> parseWhileStatement(View<Token> view) {
         ParserResult<Token> whileToken = parseToken(view.clone(), TokenKind.WHILE);
@@ -235,7 +229,6 @@ public class Parser {
         WhileStatement whileStatement = WhileStatement.of(expression.getValue(), block.getValue());
         return ParserResult.ok(whileStatement, block.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<AssignmentStatement> parseAssignmentStatement(View<Token> view) {
         ParserResult<Identifier> identifier = parseIdentifier(view.clone());
@@ -261,7 +254,6 @@ public class Parser {
         AssignmentStatement assignmentStatement = AssignmentStatement.of(identifier.getValue(), expression.getValue());
         return ParserResult.ok(assignmentStatement, semicolon.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<DeclarationStatement> parseDeclarationStatement(View<Token> view) {
         ParserResult<Token> letToken = parseToken(view.clone(), TokenKind.LET);
@@ -302,7 +294,6 @@ public class Parser {
         DeclarationStatement declarationStatement = DeclarationStatement.of(identifier.getValue(), type.getValue(), expression.getValue());
         return ParserResult.ok(declarationStatement, semiColon.getRemaining());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Statement> parseStatement(View<Token> view) {
         ParserResult<IfStatement> ifStatement = parseIfStatement(view.clone());
