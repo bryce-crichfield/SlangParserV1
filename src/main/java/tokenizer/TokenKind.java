@@ -2,7 +2,7 @@ package tokenizer;
 
 public enum TokenKind {
     // Keywords
-    LET, FN, IF, ELSE,
+    LET, FN, IF, ELSE, DATA,
     // Delimiters
     LPAREN, RPAREN, LBRACE, RBRACE,
     LBRACKET, RBRACKET,

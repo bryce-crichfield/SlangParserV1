@@ -3,6 +3,10 @@ package data;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents an immutable section of some underlying List.
+ * Works from a start index to an end index within the underlying List.
+ */
 public class View<A> {
     private final int start, end;
     private final List<A> data;
@@ -25,11 +29,11 @@ public class View<A> {
         return Optional.of(data.get(lookahead + start));
     }
 
-    public View pop() {
+    public View<A> pop() {
         return new View<>(data, start + 1, end);
     }
 
-    public View take(int count) {
+    public View<A> take(int count) {
         return new View<>(data, start + count, end);
     }
 

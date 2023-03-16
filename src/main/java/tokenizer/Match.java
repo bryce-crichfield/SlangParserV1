@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+// TODO: Refactor to a View<Char> for more consistency
 interface Match {
     // -----------------------------------------------------------------------------------------------------------------
     static Optional<Character> character(Predicate<Character> predicate, final char[] input, int start, int offset) {
