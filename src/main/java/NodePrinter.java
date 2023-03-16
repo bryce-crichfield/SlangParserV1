@@ -22,6 +22,50 @@ public class NodePrinter implements NodeListener {
     }
 
     @Override
+    public void enter(Program program) {
+        println("Program");
+        indent();
+    }
+
+    @Override
+    public void exit(Program program) {
+        dedent();
+    }
+
+    @Override
+    public void enter(FunctionDeclaration function) {
+        println("FunctionDeclaration");
+        indent();
+    }
+
+    @Override
+    public void exit(FunctionDeclaration function) {
+        dedent();
+    }
+
+    @Override
+    public void enter(Parameter parameter) {
+        println("Parameter");
+        indent();
+    }
+
+    @Override
+    public void exit(Parameter parameter) {
+        dedent();
+    }
+
+    @Override
+    public void enter(DataDeclaration dataType) {
+        println("DataDeclaration");
+        indent();
+    }
+
+    @Override
+    public void exit(DataDeclaration dataType) {
+        dedent();
+    }
+
+    @Override
     public void enter(Statement statement) {
         println("Statement");
         indent();
@@ -96,6 +140,16 @@ public class NodePrinter implements NodeListener {
     @Override
     public void exit(Expression expression) {
         dedent();
+    }
+
+    @Override
+    public void enter(Application application) {
+
+    }
+
+    @Override
+    public void exit(Application application) {
+
     }
 
     @Override

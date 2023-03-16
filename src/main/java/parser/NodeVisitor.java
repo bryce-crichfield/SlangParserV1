@@ -11,6 +11,43 @@ public class NodeVisitor {
         this.listener = listener;
     }
 
+    public void visit(Program program) {
+        listener.enter(program);
+        for (FunctionDeclaration function : program.functions()) {
+            visit(function);
+        }
+        for (DataDeclaration dataType : program.dataTypes()) {
+            visit(dataType);
+        }
+        listener.exit(program);
+    }
+
+    public void visit(FunctionDeclaration function) {
+        listener.enter(function);
+        visit(function.identifier());
+        for (Parameter parameter : function.parameters()) {
+            visit(parameter);
+        }
+        visit(function.block());
+        listener.exit(function);
+    }
+
+    public void visit(Parameter parameter) {
+        listener.enter(parameter);
+        visit(parameter.identifier());
+        visit(parameter.type());
+        listener.exit(parameter);
+    }
+
+    public void visit(DataDeclaration dataType) {
+        listener.enter(dataType);
+        visit(dataType.identifier());
+        for (DeclarationStatement declarations : dataType.declarations()) {
+            visit(declarations);
+        }
+        listener.exit(dataType);
+    }
+
     public void visit(Statement statement) {
         listener.enter(statement);
         if (statement.ifStatement() != null) {
@@ -80,7 +117,18 @@ public class NodeVisitor {
             // THIS SHOULD NEVER HAPPEN
             visit(expression.term());
         }
+        if (expression.application() != null) {
+            visit(expression.application());
+        }
         listener.exit(expression);
+    }
+
+    public void visit(Application application) {
+        listener.enter(application);
+        for (var expression : application.expressions()) {
+            visit(expression);
+        }
+        listener.exit(application);
     }
 
     public void visit(Term term) {

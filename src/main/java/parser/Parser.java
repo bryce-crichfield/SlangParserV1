@@ -92,6 +92,10 @@ public class Parser {
         return ParserResult.ok(Term.of(factor.getValue()), factor.getRemaining());
     }
     // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Application> parseApplication(View<Token> view) {
+        return ParserResult.error(view, "Not implemented");
+    }
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Expression> parseExpression(View<Token> view) {
         var term = parseTerm(view.clone());
         if (term.isError()) {
@@ -316,6 +320,22 @@ public class Parser {
         }
 
         return ParserResult.error(view, "Expected statement");
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<DataDeclaration> parseDataDeclaration(View<Token> token) {
+        return ParserResult.error(token, "Not implemented");
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Parameter> parseParameter(View<Token> token) {
+        return ParserResult.error(token, "Not implemented");
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<FunctionDeclaration> parseFunctionDeclaration(View<Token> token) {
+        return ParserResult.error(token, "Not implemented");
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Program> parseProgram(View<Token> token) {
+        return ParserResult.error(token, "Not implemented");
     }
     // -----------------------------------------------------------------------------------------------------------------
 }
