@@ -16,7 +16,7 @@ public class Main {
         var tokens = tokenizerResult.getTokens();
         tokens = tokens.stream().filter(token -> token.kind() != TokenKind.WHITESPACE).toList();
 
-        var result = Parser.parseExpression(TokenView.of(tokens));
+        var result = Parser.parseExpression(View.of(tokens));
         if (result.isError()) {
             System.out.println(result.getMessage());
             return;

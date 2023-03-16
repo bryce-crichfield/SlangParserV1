@@ -3,21 +3,21 @@ package parse;
 public class ParserResult<A> {
     private final boolean isSuccessful;
     private final A value;
-    private final TokenView remaining;
+    private final View<Token> remaining;
     private final String message;
 
-    private ParserResult(boolean isSuccessful, A value, TokenView remaining, String message) {
+    private ParserResult(boolean isSuccessful, A value, View<Token> remaining, String message) {
         this.isSuccessful = isSuccessful;
         this.value = value;
         this.remaining = remaining;
         this.message = message;
     }
 
-    public static <A> ParserResult<A> ok(A value, TokenView remaining) {
+    public static <A> ParserResult<A> ok(A value, View<Token> remaining) {
         return new ParserResult<>(true, value, remaining, "");
     }
 
-    public static <A> ParserResult<A> error(TokenView remaining, String message) {
+    public static <A> ParserResult<A> error(View<Token> remaining, String message) {
         return new ParserResult<>(false, null, remaining, message);
     }
 
@@ -25,7 +25,7 @@ public class ParserResult<A> {
         return value;
     }
 
-    public TokenView getRemaining() {
+    public View<Token> getRemaining() {
         return remaining.clone();
     }
 

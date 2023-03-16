@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 public interface Tokenizer {
     TokenizerResult tokenize();
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Character> matchCharacter(Predicate<Character> predicate, char[] input, int start, int offset) {
+    static Optional<Character> matchCharacter(Predicate<Character> predicate, final char[] input, int start, int offset) {
         Function<Character, Optional<Character>> mapper = c -> {
             if (predicate.test(c)) {
                 return Optional.of(c);
@@ -26,7 +26,7 @@ public interface Tokenizer {
         return peeked.flatMap(mapper);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchKeyword(String keyword, TokenKind kind, char[] input, int start) {
+    static Optional<Token> matchKeyword(String keyword, TokenKind kind, final char[] input, int start) {
         if (keyword.length() > input.length - start) {
             return Optional.empty();
         }
@@ -41,7 +41,7 @@ public interface Tokenizer {
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchIdentifier(char[] input, int start) {
+    static Optional<Token> matchIdentifier(final char[] input, int start) {
         Predicate<Character> isHeader = (Character c) -> Character.isAlphabetic(c) || c == '_';
         Predicate<Character> isBody = (Character c) -> Character.isAlphabetic(c) || Character.isDigit(c) || c == '_';
 
@@ -61,7 +61,7 @@ public interface Tokenizer {
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchWhitespace(char[] input, int start) {
+    static Optional<Token> matchWhitespace(final char[] input, int start) {
         Predicate<Character> isWhitespace = Character::isWhitespace;
 
         var character = matchCharacter(isWhitespace, input, start, 0);
@@ -79,7 +79,7 @@ public interface Tokenizer {
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchNumber(char[] input, int start) {
+    static Optional<Token> matchNumber(final char[] input, int start) {
         Predicate<Character> isDigit = Character::isDigit;
 
         Optional<Character> character = matchCharacter(isDigit, input, start, 0);

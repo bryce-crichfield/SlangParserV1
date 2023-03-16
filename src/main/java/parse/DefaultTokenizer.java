@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public class DefaultTokenizer implements Tokenizer {
     private int index;
-    private char[] input;
+    private final char[] input;
     private final List<Token> output;
 
     // -----------------------------------------------------------------------------------------------------------------

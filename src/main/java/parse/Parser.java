@@ -4,7 +4,8 @@ import parse.syntax.Number;
 import parse.syntax.*;
 
 public class Parser {
-    public static ParserResult<Token> parseToken(TokenView view, TokenKind kind) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Token> parseToken(View<Token> view, TokenKind kind) {
         var token = view.peek(0);
         if (token.isEmpty()) {
             return ParserResult.error(view, "Unexpected end of input");
@@ -14,8 +15,8 @@ public class Parser {
         }
         return ParserResult.ok(token.get(), view.pop());
     }
-    // --------------------------------------------------------------------------------------------
-    public static ParserResult<Number> parseNumber(TokenView view) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Number> parseNumber(View<Token> view) {
         var token = parseToken(view.clone(), TokenKind.NUMBER);
         if (token.isError()) {
             return ParserResult.error(view, token.getMessage());
@@ -23,8 +24,8 @@ public class Parser {
         var number = Number.of(Double.parseDouble(token.getValue().symbol()));
         return ParserResult.ok(number, token.getRemaining());
     }
-    // --------------------------------------------------------------------------------------------
-    public static ParserResult<Identifier> parseIdentifier(TokenView view) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Identifier> parseIdentifier(View<Token> view) {
         var token = parseToken(view.clone(), TokenKind.IDENTIFIER);
         if (token.isError()) {
             return ParserResult.error(view, token.getMessage());
@@ -32,8 +33,8 @@ public class Parser {
         var identifier = Identifier.of(token.getValue().symbol());
         return ParserResult.ok(identifier, token.getRemaining());
     }
-    // --------------------------------------------------------------------------------------------
-    public static ParserResult<Factor> parseFactor(TokenView view) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Factor> parseFactor(View<Token> view) {
         // F := '(' E ')'
         //    | NUMBER
         //    | IDENTIFIER
@@ -64,8 +65,8 @@ public class Parser {
 
         return ParserResult.error(view, "Expected factor or Number or Identifier");
     }
-    // --------------------------------------------------------------------------------------------
-    public static ParserResult<Term> parseTerm(TokenView view) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Term> parseTerm(View<Token> view) {
         // T := T '*' F
         //    | T '/' F
         //    | F
@@ -95,8 +96,8 @@ public class Parser {
 
         return ParserResult.ok(Term.of(factor.getValue()), factor.getRemaining());
     }
-    // --------------------------------------------------------------------------------------------
-    public static ParserResult<Expression> parseExpression(TokenView view) {
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Expression> parseExpression(View<Token> view) {
         // E := E '+' T
         //    | E '-' T
         //    | T
@@ -126,4 +127,5 @@ public class Parser {
 
         return ParserResult.ok(Expression.of(term.getValue()), term.getRemaining());
     }
+    // -----------------------------------------------------------------------------------------------------------------
 }
