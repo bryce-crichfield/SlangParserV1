@@ -19,10 +19,11 @@ interface Match {
             return Optional.empty();
         }
 
-        var peeked = Optional.of(input[start + offset]);
+        Optional<Character> peeked = Optional.of(input[start + offset]);
 
         return peeked.flatMap(mapper);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     static Optional<Token> keyword(String keyword, TokenKind kind, final char[] input, int start) {
         if (keyword.length() > input.length - start) {
@@ -35,15 +36,16 @@ interface Match {
             }
         }
 
-        var token = Token.of(kind, keyword, start);
+        Token token = Token.of(kind, keyword, start);
         return Optional.of(token);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     static Optional<Token> identifier(final char[] input, int start) {
         Predicate<Character> isHeader = (Character c) -> Character.isAlphabetic(c) || c == '_';
         Predicate<Character> isBody = (Character c) -> Character.isAlphabetic(c) || Character.isDigit(c) || c == '_';
 
-        var character = Match.character(isHeader, input, start, 0);
+        Optional<Character> character = Match.character(isHeader, input, start, 0);
         if (character.isEmpty()) {
             return Optional.empty();
         }
@@ -55,14 +57,15 @@ interface Match {
         }
 
         // Construct and Return Token
-        var token = Token.of(TokenKind.IDENTIFIER, builder.toString(), start);
+        Token token = Token.of(TokenKind.IDENTIFIER, builder.toString(), start);
         return Optional.of(token);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     static Optional<Token> whitespace(final char[] input, int start) {
         Predicate<Character> isWhitespace = Character::isWhitespace;
 
-        var character = Match.character(isWhitespace, input, start, 0);
+        Optional<Character> character = Match.character(isWhitespace, input, start, 0);
         if (character.isEmpty()) {
             return Optional.empty();
         }
@@ -73,9 +76,10 @@ interface Match {
             character = Match.character(isWhitespace, input, start, builder.length());
         }
 
-        var token = Token.of(TokenKind.WHITESPACE, builder.toString(), start);
+        Token token = Token.of(TokenKind.WHITESPACE, builder.toString(), start);
         return Optional.of(token);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     static Optional<Token> number(final char[] input, int start) {
         Predicate<Character> isDigit = Character::isDigit;
@@ -106,7 +110,7 @@ interface Match {
             }
         }
 
-        var token = Token.of(TokenKind.NUMBER, builder.toString(), start);
+        Token token = Token.of(TokenKind.NUMBER, builder.toString(), start);
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------

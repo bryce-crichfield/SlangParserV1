@@ -1,7 +1,7 @@
 package parser;
 
-import parser.syntax.*;
 import parser.syntax.Number;
+import parser.syntax.*;
 import tokenizer.TokenKind;
 
 public class NodeVisitor {
@@ -99,7 +99,7 @@ public class NodeVisitor {
 
     public void visit(Block block) {
         listener.enter(block);
-        for (var statement : block.statements()) {
+        for (Statement statement : block.statements()) {
             visit(statement);
         }
         listener.exit(block);
@@ -125,7 +125,7 @@ public class NodeVisitor {
 
     public void visit(Application application) {
         listener.enter(application);
-        for (var expression : application.expressions()) {
+        for (Expression expression : application.expressions()) {
             visit(expression);
         }
         listener.exit(application);
