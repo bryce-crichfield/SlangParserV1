@@ -78,6 +78,10 @@ public class Tokenizer {
         pairs.put("{", TokenKind.LBRACE);
         pairs.put("}", TokenKind.RBRACE);
         pairs.put(";", TokenKind.SEMICOLON);
+        pairs.put(":", TokenKind.COLON);
+        pairs.put(",", TokenKind.COMMA);
+
+        pairs.put("=", TokenKind.EQUALS);
         for (var pair: pairs.entrySet()) {
             var match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
             if (match.isPresent()) {

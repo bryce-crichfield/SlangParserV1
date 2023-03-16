@@ -10,6 +10,7 @@ public enum TokenKind {
 
     // Operators
     PLUS, MINUS, STAR, SLASH,
+    EQUALS,
     WHITESPACE,
 
     // Data

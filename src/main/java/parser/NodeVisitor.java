@@ -1,5 +1,7 @@
-package parser.syntax;
+package parser;
 
+import parser.syntax.*;
+import parser.syntax.Number;
 import tokenizer.TokenKind;
 
 public class NodeVisitor {
@@ -15,6 +17,14 @@ public class NodeVisitor {
             visit(statement.ifStatement());
         } else if (statement.expression() != null) {
             visit(statement.expression());
+        } else if (statement.whileStatement() != null) {
+            visit(statement.whileStatement());
+        } else if (statement.assignmentStatement() != null) {
+            visit(statement.assignmentStatement());
+        } else if (statement.declarationStatement() != null) {
+            visit(statement.declarationStatement());
+        } else {
+            throw new RuntimeException("Invalid statement");
         }
         listener.exit(statement);
     }
@@ -23,7 +33,31 @@ public class NodeVisitor {
         listener.enter(ifStatement);
         visit(ifStatement.condition());
         visit(ifStatement.thenBlock());
+        if (ifStatement.elseBlock() != null) {
+            visit(ifStatement.elseBlock());
+        }
         listener.exit(ifStatement);
+    }
+
+    public void visit(WhileStatement whileStatement) {
+        listener.enter(whileStatement);
+        visit(whileStatement.condition());
+        visit(whileStatement.block());
+        listener.exit(whileStatement);
+    }
+
+    public void visit(AssignmentStatement assignmentStatement) {
+        listener.enter(assignmentStatement);
+        visit(assignmentStatement.identifier());
+        visit(assignmentStatement.expression());
+        listener.exit(assignmentStatement);
+    }
+
+    public void visit(DeclarationStatement declarationStatement) {
+        listener.enter(declarationStatement);
+        visit(declarationStatement.identifier());
+        visit(declarationStatement.expression());
+        listener.exit(declarationStatement);
     }
 
     public void visit(Block block) {

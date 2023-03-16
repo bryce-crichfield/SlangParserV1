@@ -1,3 +1,4 @@
+import parser.NodeListener;
 import tokenizer.TokenKind;
 import parser.syntax.*;
 import parser.syntax.Number;
@@ -39,6 +40,39 @@ public class NodePrinter implements NodeListener {
 
     @Override
     public void exit(IfStatement ifStatement) {
+        dedent();
+    }
+
+    @Override
+    public void enter(WhileStatement whileStatement) {
+        println("WhileStatement");
+        indent();
+    }
+
+    @Override
+    public void exit(WhileStatement whileStatement) {
+        dedent();
+    }
+
+    @Override
+    public void enter(AssignmentStatement assignmentStatement) {
+        println("AssignmentStatement");
+        indent();
+    }
+
+    @Override
+    public void exit(AssignmentStatement assignmentStatement) {
+        dedent();
+    }
+
+    @Override
+    public void enter(DeclarationStatement declarationStatement) {
+        println("DeclarationStatement");
+        indent();
+    }
+
+    @Override
+    public void exit(DeclarationStatement declarationStatement) {
         dedent();
     }
 

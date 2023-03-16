@@ -166,13 +166,119 @@ public class Parser {
             return ParserResult.error(view, rightParen.getMessage());
         }
 
+        var thenBlock = parseBlock(rightParen.getRemaining());
+        if (thenBlock.isError()) {
+            return ParserResult.error(view, thenBlock.getMessage());
+        }
+
+        var elseToken = parseToken(thenBlock.getRemaining(), TokenKind.ELSE);
+        if (elseToken.isOk()) {
+            var elseBlock = parseBlock(elseToken.getRemaining());
+            if (elseBlock.isError()) {
+                return ParserResult.error(view, elseBlock.getMessage());
+            }
+
+            var ifStatement = IfStatement.of(expression.getValue(), thenBlock.getValue(), elseBlock.getValue());
+            return ParserResult.ok(ifStatement, elseBlock.getRemaining());
+        }
+
+        var ifStatement = IfStatement.of(expression.getValue(), thenBlock.getValue());
+        return ParserResult.ok(ifStatement, thenBlock.getRemaining());
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<WhileStatement> parseWhileStatement(View<Token> view) {
+        var whileToken = parseToken(view.clone(), TokenKind.WHILE);
+        if (whileToken.isError()) {
+            return ParserResult.error(view, whileToken.getMessage());
+        }
+
+        var leftParen = parseToken(whileToken.getRemaining(), TokenKind.LPAREN);
+        if (leftParen.isError()) {
+            return ParserResult.error(view, leftParen.getMessage());
+        }
+
+        var expression = parseExpression(leftParen.getRemaining());
+        if (expression.isError()) {
+            return ParserResult.error(view, expression.getMessage());
+        }
+
+        var rightParen = parseToken(expression.getRemaining(), TokenKind.RPAREN);
+        if (rightParen.isError()) {
+            return ParserResult.error(view, rightParen.getMessage());
+        }
+
         var block = parseBlock(rightParen.getRemaining());
         if (block.isError()) {
             return ParserResult.error(view, block.getMessage());
         }
 
-        var ifStatement = IfStatement.of(expression.getValue(), block.getValue());
-        return ParserResult.ok(ifStatement, block.getRemaining());
+        var whileStatement = WhileStatement.of(expression.getValue(), block.getValue());
+        return ParserResult.ok(whileStatement, block.getRemaining());
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<AssignmentStatement> parseAssignmentStatement(View<Token> view) {
+        var identifier = parseIdentifier(view.clone());
+        if (identifier.isError()) {
+            return ParserResult.error(view, identifier.getMessage());
+        }
+
+        var equals = parseToken(identifier.getRemaining(), TokenKind.EQUALS);
+        if (equals.isError()) {
+            return ParserResult.error(view, equals.getMessage());
+        }
+
+        var expression = parseExpression(equals.getRemaining());
+        if (expression.isError()) {
+            return ParserResult.error(view, expression.getMessage());
+        }
+
+        var semicolon = parseToken(expression.getRemaining(), TokenKind.SEMICOLON);
+        if (semicolon.isError()) {
+            return ParserResult.error(view, semicolon.getMessage());
+        }
+
+        var assignmentStatement = AssignmentStatement.of(identifier.getValue(), expression.getValue());
+        return ParserResult.ok(assignmentStatement, semicolon.getRemaining());
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<DeclarationStatement> parseDeclarationStatement(View<Token> view) {
+        var letToken = parseToken(view.clone(), TokenKind.LET);
+        if (letToken.isError()) {
+            return ParserResult.error(view, letToken.getMessage());
+        }
+
+        var identifier = parseIdentifier(letToken.getRemaining());
+        if (identifier.isError()) {
+            return ParserResult.error(view, identifier.getMessage());
+        }
+
+        var colon = parseToken(identifier.getRemaining(), TokenKind.COLON);
+        if (colon.isError()) {
+            return ParserResult.error(view, colon.getMessage());
+        }
+
+        var type = parseIdentifier(colon.getRemaining());
+        if (type.isError()) {
+            return ParserResult.error(view, type.getMessage());
+        }
+
+        var equals = parseToken(type.getRemaining(), TokenKind.EQUALS);
+        if (equals.isError()) {
+            return ParserResult.error(view, equals.getMessage());
+        }
+
+        var expression = parseExpression(equals.getRemaining());
+        if (expression.isError()) {
+            return ParserResult.error(view, expression.getMessage());
+        }
+
+        var semiColon = parseToken(expression.getRemaining(), TokenKind.SEMICOLON);
+        if (semiColon.isError()) {
+            return ParserResult.error(view, semiColon.getMessage());
+        }
+
+        var declarationStatement = DeclarationStatement.of(identifier.getValue(), type.getValue(), expression.getValue());
+        return ParserResult.ok(declarationStatement, semiColon.getRemaining());
     }
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Statement> parseStatement(View<Token> view) {
@@ -180,6 +286,24 @@ public class Parser {
         if (ifStatement.isOk()) {
             var resultStatement = Statement.of(ifStatement.getValue());
             return ParserResult.ok(resultStatement, ifStatement.getRemaining());
+        }
+
+        var whileStatement = parseWhileStatement(view.clone());
+        if (whileStatement.isOk()) {
+            var resultStatement = Statement.of(whileStatement.getValue());
+            return ParserResult.ok(resultStatement, whileStatement.getRemaining());
+        }
+
+        var assignmentStatement = parseAssignmentStatement(view.clone());
+        if (assignmentStatement.isOk()) {
+            var resultStatement = Statement.of(assignmentStatement.getValue());
+            return ParserResult.ok(resultStatement, assignmentStatement.getRemaining());
+        }
+
+        var declarationStatement = parseDeclarationStatement(view.clone());
+        if (declarationStatement.isOk()) {
+            var resultStatement = Statement.of(declarationStatement.getValue());
+            return ParserResult.ok(resultStatement, declarationStatement.getRemaining());
         }
 
         var expression = parseExpression(view.clone());
