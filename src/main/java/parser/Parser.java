@@ -38,10 +38,6 @@ public class Parser {
     }
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Factor> parseFactor(View<Token> view) {
-        // F := '(' E ')'
-        //    | NUMBER
-        //    | IDENTIFIER
-
         var number = parseNumber(view.clone());
         if (number.isOk()) {
             var factor = Factor.of(number.getValue());
@@ -70,10 +66,6 @@ public class Parser {
     }
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Term> parseTerm(View<Token> view) {
-        // T := T '*' F
-        //    | T '/' F
-        //    | F
-
         var factor = parseFactor(view.clone());
         if (factor.isError()) {
             return ParserResult.error(view, factor.getMessage());
@@ -101,10 +93,6 @@ public class Parser {
     }
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Expression> parseExpression(View<Token> view) {
-        // E := E '+' T
-        //    | E '-' T
-        //    | T
-
         var term = parseTerm(view.clone());
         if (term.isError()) {
             return ParserResult.error(view, term.getMessage());
@@ -129,6 +117,81 @@ public class Parser {
         }
 
         return ParserResult.ok(Expression.of(term.getValue()), term.getRemaining());
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Block> parseBlock(View<Token> view) {
+        var leftBrace = parseToken(view.clone(), TokenKind.LBRACE);
+        if (leftBrace.isError()) {
+            return ParserResult.error(view, leftBrace.getMessage());
+        }
+
+        var statements = new java.util.ArrayList<Statement>();
+        var remaining = leftBrace.getRemaining();
+        while (true) {
+            var statement = parseStatement(remaining.clone());
+            if (statement.isError()) {
+                break;
+            }
+            statements.add(statement.getValue());
+            remaining = statement.getRemaining();
+        }
+
+        var rightBrace = parseToken(remaining.clone(), TokenKind.RBRACE);
+        if (rightBrace.isError()) {
+            return ParserResult.error(view, rightBrace.getMessage());
+        }
+
+        var block = Block.of(statements);
+        return ParserResult.ok(block, rightBrace.getRemaining());
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<IfStatement> parseIfStatement(View<Token> view) {
+        var ifToken = parseToken(view.clone(), TokenKind.IF);
+        if (ifToken.isError()) {
+            return ParserResult.error(view, ifToken.getMessage());
+        }
+
+        var leftParen = parseToken(ifToken.getRemaining(), TokenKind.LPAREN);
+        if (leftParen.isError()) {
+            return ParserResult.error(view, leftParen.getMessage());
+        }
+
+        var expression = parseExpression(leftParen.getRemaining());
+        if (expression.isError()) {
+            return ParserResult.error(view, expression.getMessage());
+        }
+
+        var rightParen = parseToken(expression.getRemaining(), TokenKind.RPAREN);
+        if (rightParen.isError()) {
+            return ParserResult.error(view, rightParen.getMessage());
+        }
+
+        var block = parseBlock(rightParen.getRemaining());
+        if (block.isError()) {
+            return ParserResult.error(view, block.getMessage());
+        }
+
+        var ifStatement = IfStatement.of(expression.getValue(), block.getValue());
+        return ParserResult.ok(ifStatement, block.getRemaining());
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Statement> parseStatement(View<Token> view) {
+        var ifStatement = parseIfStatement(view.clone());
+        if (ifStatement.isOk()) {
+            var resultStatement = Statement.of(ifStatement.getValue());
+            return ParserResult.ok(resultStatement, ifStatement.getRemaining());
+        }
+
+        var expression = parseExpression(view.clone());
+        if (expression.isOk()) {
+            var semicolon = parseToken(expression.getRemaining(), TokenKind.SEMICOLON);
+            if (semicolon.isOk()) {
+                var resultStatement = Statement.of(expression.getValue());
+                return ParserResult.ok(resultStatement, semicolon.getRemaining());
+            }
+        }
+
+        return ParserResult.error(view, "Expected statement");
     }
     // -----------------------------------------------------------------------------------------------------------------
 }

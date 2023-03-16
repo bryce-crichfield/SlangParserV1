@@ -75,7 +75,9 @@ public class Tokenizer {
 
         pairs.put("(", TokenKind.LPAREN);
         pairs.put(")", TokenKind.RPAREN);
-
+        pairs.put("{", TokenKind.LBRACE);
+        pairs.put("}", TokenKind.RBRACE);
+        pairs.put(";", TokenKind.SEMICOLON);
         for (var pair: pairs.entrySet()) {
             var match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
             if (match.isPresent()) {

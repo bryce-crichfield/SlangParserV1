@@ -9,6 +9,31 @@ public class NodeVisitor {
         this.listener = listener;
     }
 
+    public void visit(Statement statement) {
+        listener.enter(statement);
+        if (statement.ifStatement() != null) {
+            visit(statement.ifStatement());
+        } else if (statement.expression() != null) {
+            visit(statement.expression());
+        }
+        listener.exit(statement);
+    }
+
+    public void visit(IfStatement ifStatement) {
+        listener.enter(ifStatement);
+        visit(ifStatement.condition());
+        visit(ifStatement.thenBlock());
+        listener.exit(ifStatement);
+    }
+
+    public void visit(Block block) {
+        listener.enter(block);
+        for (var statement : block.statements()) {
+            visit(statement);
+        }
+        listener.exit(block);
+    }
+
     public void visit(Expression expression) {
         listener.enter(expression);
         if (expression.expression() != null) {

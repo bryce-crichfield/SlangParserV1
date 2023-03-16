@@ -21,6 +21,39 @@ public class NodePrinter implements NodeListener {
     }
 
     @Override
+    public void enter(Statement statement) {
+        println("Statement");
+        indent();
+    }
+
+    @Override
+    public void exit(Statement statement) {
+        dedent();
+    }
+
+    @Override
+    public void enter(IfStatement ifStatement) {
+        println("IfStatement");
+        indent();
+    }
+
+    @Override
+    public void exit(IfStatement ifStatement) {
+        dedent();
+    }
+
+    @Override
+    public void enter(Block block) {
+        println("Block");
+        indent();
+    }
+
+    @Override
+    public void exit(Block block) {
+        dedent();
+    }
+
+    @Override
     public void enter(Expression expression) {
         println("Expr");
         indent();
