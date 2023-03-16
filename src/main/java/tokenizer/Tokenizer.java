@@ -1,15 +1,15 @@
-package parse;
+package tokenizer;
 
 import java.util.List;
 import java.util.Optional;
 
-public class DefaultTokenizer implements Tokenizer {
+public class Tokenizer {
     private int index;
     private final char[] input;
     private final List<Token> output;
 
     // -----------------------------------------------------------------------------------------------------------------
-    public DefaultTokenizer(String input) {
+    public Tokenizer(String input) {
         this.input = input.toCharArray();
         this.index = 0;
         this.output = new java.util.ArrayList<>();
@@ -23,21 +23,21 @@ public class DefaultTokenizer implements Tokenizer {
 
             Optional<Token> match;
 
-            match = Tokenizer.matchIdentifier(input, index);
+            match = Match.identifier(input, index);
             if (match.isPresent()) {
                 output.add(match.get());
                 index += match.get().symbol().length();
                 continue;
             }
 
-            match = Tokenizer.matchNumber(input, index);
+            match = Match.number(input, index);
             if (match.isPresent()) {
                 output.add(match.get());
                 index += match.get().symbol().length();
                 continue;
             }
 
-            match = Tokenizer.matchWhitespace(input, index);
+            match = Match.whitespace(input, index);
             if (match.isPresent()) {
                 output.add(match.get());
                 index += match.get().symbol().length();
@@ -77,7 +77,7 @@ public class DefaultTokenizer implements Tokenizer {
         pairs.put(")", TokenKind.RPAREN);
 
         for (var pair: pairs.entrySet()) {
-            var match = Tokenizer.matchKeyword(pair.getKey(), pair.getValue(), input, index);
+            var match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
             if (match.isPresent()) {
                 output.add(match.get());
                 index += match.get().symbol().length();

@@ -1,3 +1,3 @@
-package parse.syntax;
+package parser.syntax;
 
 public interface Node { }

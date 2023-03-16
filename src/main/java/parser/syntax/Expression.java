@@ -1,6 +1,6 @@
-package parse.syntax;
+package parser.syntax;
 
-import parse.TokenKind;
+import tokenizer.TokenKind;
 
 public record Expression(Expression expression, TokenKind operator, Term term) implements Node {
     public static Expression of(Expression expression, TokenKind operator, Term term) {

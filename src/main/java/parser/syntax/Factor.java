@@ -1,4 +1,4 @@
-package parse.syntax;
+package parser.syntax;
 
 public record Factor(Expression expression, Number number, Identifier identifier) implements Node {
     public static Factor of(Expression expression) {

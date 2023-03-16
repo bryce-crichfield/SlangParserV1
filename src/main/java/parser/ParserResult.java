@@ -1,4 +1,7 @@
-package parse;
+package parser;
+
+import data.View;
+import tokenizer.Token;
 
 public class ParserResult<A> {
     private final boolean isSuccessful;

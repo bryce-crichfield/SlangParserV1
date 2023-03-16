@@ -1,4 +1,4 @@
-package parse;
+package data;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class View<A> {
         return new View<>(tokens, 0, tokens.size());
     }
 
-    Optional<A> peek(int lookahead) {
+    public Optional<A> peek(int lookahead) {
         if (lookahead + start >= end) {
             return Optional.empty();
         }
@@ -25,11 +25,11 @@ public class View<A> {
         return Optional.of(data.get(lookahead + start));
     }
 
-    View pop() {
+    public View pop() {
         return new View<>(data, start + 1, end);
     }
 
-    View take(int count) {
+    public View take(int count) {
         return new View<>(data, start + count, end);
     }
 

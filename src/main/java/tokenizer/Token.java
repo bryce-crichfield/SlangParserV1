@@ -1,4 +1,4 @@
-package parse;
+package tokenizer;
 
 public record Token(TokenKind kind, String symbol, int position) implements Cloneable {
     public static Token of(TokenKind kind, String symbol, int position) {

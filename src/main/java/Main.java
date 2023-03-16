@@ -1,13 +1,16 @@
-import parse.*;
-import parse.syntax.Expression;
-import parse.syntax.NodeListener;
-import parse.syntax.NodeVisitor;
+import data.View;
+import tokenizer.TokenKind;
+import tokenizer.Tokenizer;
+import parser.*;
+import parser.syntax.Expression;
+import parser.syntax.NodeListener;
+import parser.syntax.NodeVisitor;
 
 public class Main {
     public static void main(String[] args) {
         var test = "1 + 2 * 3 / (5 - 1) * 2";
 
-        var tokenizer = new DefaultTokenizer(test);
+        var tokenizer = new Tokenizer(test);
         var tokenizerResult = tokenizer.tokenize();
         if (tokenizerResult.isError()) {
             System.out.println("Lex Error: " + tokenizerResult.getMessage());

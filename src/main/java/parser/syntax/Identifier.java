@@ -1,4 +1,4 @@
-package parse.syntax;
+package parser.syntax;
 
 public record Identifier(String name) implements Node {
     public static Identifier of(String name) {

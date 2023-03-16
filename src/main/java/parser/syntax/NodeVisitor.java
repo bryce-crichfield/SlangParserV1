@@ -1,6 +1,6 @@
-package parse.syntax;
+package parser.syntax;
 
-import parse.TokenKind;
+import tokenizer.TokenKind;
 
 public class NodeVisitor {
     NodeListener listener;

@@ -1,14 +1,12 @@
-package parse;
+package tokenizer;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface Tokenizer {
-    TokenizerResult tokenize();
+interface Match {
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Character> matchCharacter(Predicate<Character> predicate, final char[] input, int start, int offset) {
+    static Optional<Character> character(Predicate<Character> predicate, final char[] input, int start, int offset) {
         Function<Character, Optional<Character>> mapper = c -> {
             if (predicate.test(c)) {
                 return Optional.of(c);
@@ -26,7 +24,7 @@ public interface Tokenizer {
         return peeked.flatMap(mapper);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchKeyword(String keyword, TokenKind kind, final char[] input, int start) {
+    static Optional<Token> keyword(String keyword, TokenKind kind, final char[] input, int start) {
         if (keyword.length() > input.length - start) {
             return Optional.empty();
         }
@@ -41,11 +39,11 @@ public interface Tokenizer {
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchIdentifier(final char[] input, int start) {
+    static Optional<Token> identifier(final char[] input, int start) {
         Predicate<Character> isHeader = (Character c) -> Character.isAlphabetic(c) || c == '_';
         Predicate<Character> isBody = (Character c) -> Character.isAlphabetic(c) || Character.isDigit(c) || c == '_';
 
-        var character = matchCharacter(isHeader, input, start, 0);
+        var character = Match.character(isHeader, input, start, 0);
         if (character.isEmpty()) {
             return Optional.empty();
         }
@@ -53,7 +51,7 @@ public interface Tokenizer {
         StringBuilder builder = new StringBuilder();
         while (character.isPresent()) {
             builder.append(character.get());
-            character = matchCharacter(isBody, input, start, builder.length());
+            character = Match.character(isBody, input, start, builder.length());
         }
 
         // Construct and Return Token
@@ -61,10 +59,10 @@ public interface Tokenizer {
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchWhitespace(final char[] input, int start) {
+    static Optional<Token> whitespace(final char[] input, int start) {
         Predicate<Character> isWhitespace = Character::isWhitespace;
 
-        var character = matchCharacter(isWhitespace, input, start, 0);
+        var character = Match.character(isWhitespace, input, start, 0);
         if (character.isEmpty()) {
             return Optional.empty();
         }
@@ -72,17 +70,17 @@ public interface Tokenizer {
         StringBuilder builder = new StringBuilder();
         while (character.isPresent()) {
             builder.append(character.get());
-            character = matchCharacter(isWhitespace, input, start, builder.length());
+            character = Match.character(isWhitespace, input, start, builder.length());
         }
 
         var token = Token.of(TokenKind.WHITESPACE, builder.toString(), start);
         return Optional.of(token);
     }
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Token> matchNumber(final char[] input, int start) {
+    static Optional<Token> number(final char[] input, int start) {
         Predicate<Character> isDigit = Character::isDigit;
 
-        Optional<Character> character = matchCharacter(isDigit, input, start, 0);
+        Optional<Character> character = Match.character(isDigit, input, start, 0);
         if (character.isEmpty()) {
             return Optional.empty();
         }
@@ -90,21 +88,21 @@ public interface Tokenizer {
         StringBuilder builder = new StringBuilder();
         while (character.isPresent()) {
             builder.append(character.get());
-            character = matchCharacter(isDigit, input, start, builder.length());
+            character = Match.character(isDigit, input, start, builder.length());
         }
 
-        character = matchCharacter(c -> c == '.', input, start, builder.length());
+        character = Match.character(c -> c == '.', input, start, builder.length());
         if (character.isPresent()) {
             builder.append(character.get());
 
-            character = matchCharacter(isDigit, input, start, builder.length());
+            character = Match.character(isDigit, input, start, builder.length());
             if (character.isEmpty()) {
                 return Optional.empty();
             }
 
             while (character.isPresent()) {
                 builder.append(character.get());
-                character = matchCharacter(isDigit, input, start, builder.length());
+                character = Match.character(isDigit, input, start, builder.length());
             }
         }
 

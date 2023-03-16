@@ -1,6 +1,6 @@
-import parse.TokenKind;
-import parse.syntax.*;
-import parse.syntax.Number;
+import tokenizer.TokenKind;
+import parser.syntax.*;
+import parser.syntax.Number;
 
 public class NodePrinter implements NodeListener {
     private int count = 0;

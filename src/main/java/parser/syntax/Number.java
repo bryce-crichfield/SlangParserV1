@@ -1,4 +1,4 @@
-package parse.syntax;
+package parser.syntax;
 
 public record Number(double value) implements Node {
     public static Number of(double value) {

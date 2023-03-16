@@ -1,4 +1,4 @@
-package parse;
+package tokenizer;
 
 public enum TokenKind {
     // Keywords

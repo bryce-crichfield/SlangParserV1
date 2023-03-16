@@ -1,6 +1,6 @@
-package parse.syntax;
+package parser.syntax;
 
-import parse.TokenKind;
+import tokenizer.TokenKind;
 
 public record Term(Term term, TokenKind operator, Factor factor) implements Node {
     public static Term of(Term term, TokenKind operator, Factor factor) {
