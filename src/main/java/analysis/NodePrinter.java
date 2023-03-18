@@ -1,6 +1,9 @@
-import parser.syntax.Number;
-import parser.syntax.*;
-import tokenizer.TokenKind;
+package analysis;
+
+import parser.Identifier;
+import parser.Node;
+import parser.NodeVisitorAdapter;
+import parser.Number;
 
 public class NodePrinter extends NodeVisitorAdapter {
     private int count = 0;
@@ -14,7 +17,7 @@ public class NodePrinter extends NodeVisitorAdapter {
     }
 
     private void println(String message) {
-        for (int i = 0; i < count; i++) {
+        for (var i = 0; i < count; i++) {
             System.out.print(".");
         }
         System.out.println(message);
@@ -27,6 +30,18 @@ public class NodePrinter extends NodeVisitorAdapter {
 
     public void defaultExit(Node node) {
         dedent();
+    }
+
+    @Override
+    public void exit(Number number) {
+        println("value: " + number.value);
+        super.exit(number);
+    }
+
+    @Override
+    public void exit(Identifier identifier) {
+        println("name: " + identifier.value);
+        super.exit(identifier);
     }
 }
 

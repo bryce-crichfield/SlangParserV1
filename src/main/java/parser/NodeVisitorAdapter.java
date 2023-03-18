@@ -1,10 +1,9 @@
-package parser.syntax;
-
-import tokenizer.Token;
+package parser;
 
 public abstract class NodeVisitorAdapter implements NodeVisitor {
 
     public abstract void defaultEnter(Node node);
+
     public abstract void defaultExit(Node node);
 
     @Override
@@ -28,13 +27,13 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
-    public void enter(Parameter parameter) {
-        defaultEnter(parameter);
+    public void enter(Parameters parameters) {
+        defaultEnter(parameters);
     }
 
     @Override
-    public void exit(Parameter parameter) {
-        defaultExit(parameter);
+    public void exit(Parameters parameters) {
+        defaultExit(parameters);
     }
 
     @Override
@@ -55,6 +54,16 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     @Override
     public void exit(Statement statement) {
         defaultExit(statement);
+    }
+
+    @Override
+    public void enter(ReturnStatement returnStatement) {
+        defaultEnter(returnStatement);
+    }
+
+    @Override
+    public void exit(ReturnStatement returnStatement) {
+        defaultExit(returnStatement);
     }
 
     @Override
@@ -108,13 +117,13 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
-    public void enter(Application application) {
-        defaultEnter(application);
+    public void enter(FunctionCall functionCall) {
+        defaultEnter(functionCall);
     }
 
     @Override
-    public void exit(Application application) {
-        defaultExit(application);
+    public void exit(FunctionCall functionCall) {
+        defaultExit(functionCall);
     }
 
     @Override
@@ -148,13 +157,23 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
-    public void enter(Accessor accessor) {
-        defaultEnter(accessor);
+    public void enter(TypeSpecifier typeSpecifier) {
+        defaultEnter(typeSpecifier);
     }
 
     @Override
-    public void exit(Accessor accessor) {
-        defaultExit(accessor);
+    public void exit(TypeSpecifier typeSpecifier) {
+        defaultExit(typeSpecifier);
+    }
+
+    @Override
+    public void enter(CompositeIdentifier compositeIdentifier) {
+        defaultEnter(compositeIdentifier);
+    }
+
+    @Override
+    public void exit(CompositeIdentifier compositeIdentifier) {
+        defaultExit(compositeIdentifier);
     }
 
     @Override
@@ -175,5 +194,25 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     @Override
     public void exit(Number number) {
         defaultExit(number);
+    }
+
+    @Override
+    public void enter(TypedIdentifier typedIdentifier) {
+        defaultEnter(typedIdentifier);
+    }
+
+    @Override
+    public void exit(TypedIdentifier typedIdentifier) {
+        defaultExit(typedIdentifier);
+    }
+
+    @Override
+    public void enter(ForStatement forStatement) {
+        defaultEnter(forStatement);
+    }
+
+    @Override
+    public void exit(ForStatement forStatement) {
+        defaultExit(forStatement);
     }
 }

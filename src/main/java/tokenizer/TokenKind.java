@@ -2,7 +2,10 @@ package tokenizer;
 
 public enum TokenKind {
     // Keywords
-    LET, FN, IF, ELSE, DATA,
+    LET, FN, IF, ELSE, DATA, RETURN, CONTINUE, BREAK,
+    WHILE,
+    // For Loop
+    FOR, UNTIL, TO, BY,
     // Delimiters
     LPAREN, RPAREN, LBRACE, RBRACE,
     LBRACKET, RBRACKET,
@@ -13,6 +16,6 @@ public enum TokenKind {
     EQUALS,
     WHITESPACE,
 
-    // Data
-    IDENTIFIER, STRING, NUMBER, TRUE, FALSE, RETURN, FOR, WHILE, BREAK, CONTINUE, STRUCT, ENUM, IMPORT,
+    // Data TYPES
+    IDENTIFIER, STRING, NUMBER, TRUE, FALSE,
 }

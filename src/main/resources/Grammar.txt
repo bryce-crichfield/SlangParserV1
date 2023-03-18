@@ -21,14 +21,14 @@ while_statement: 'while' expression block
 
 declaration_statement : 'let' IDENTIFIER ':' IDENTIFIER '=' expression ';'
 
-assignment_statement : accessor '=' expression ';'
+assignment_statement : compositeIdentifier '=' expression ';'
 
-expression: application
+expression: functionCall
     | expression '+' term
     | expression '-' term
     | term
 
-application: IDENTIFIER '(' expression_list? ')' ';'
+functionCall: IDENTIFIER '(' expression_list? ')' ';'
 
 expression_list : expression (',' expression)*
 
@@ -37,10 +37,10 @@ term: term '*' factor
     | factor
 
 factor: '(' expression ')'
-    | accessor
+    | compositeIdentifier
     | NUMBER
 
-accessor = IDENTIFIER ('.' IDENTIFIER)*
+compositeIdentifier = IDENTIFIER ('.' IDENTIFIER)*
 
 NUMBER: [0-9]+([.][0-9]+)?
 
