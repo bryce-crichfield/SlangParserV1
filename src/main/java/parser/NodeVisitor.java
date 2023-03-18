@@ -60,7 +60,9 @@ public interface NodeVisitor {
     void enter(Block block);
 
     void exit(Block block);
+
     void enter(TypeSpecifier typeSpecifier);
+
     void exit(TypeSpecifier typeSpecifier);
 
     void enter(CompositeIdentifier compositeIdentifier);
@@ -76,8 +78,10 @@ public interface NodeVisitor {
     void exit(Number number);
 
     void enter(TypedIdentifier typedIdentifier);
+
     void exit(TypedIdentifier typedIdentifier);
 
     void enter(ForStatement forStatement);
+
     void exit(ForStatement forStatement);
 }

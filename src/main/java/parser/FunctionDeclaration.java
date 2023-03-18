@@ -4,8 +4,6 @@ import tokenizer.Token;
 import tokenizer.TokenKind;
 import util.View;
 
-import java.util.List;
-
 public class FunctionDeclaration implements Node {
     public Identifier identifier;
     public Parameters parameters;

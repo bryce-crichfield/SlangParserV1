@@ -69,7 +69,9 @@ public class ForStatement implements Node {
             return ParserResult.error(view, body.getMessage());
         }
 
-        var result = new ForStatement(indexer.getValue(), start.getValue(), end.getValue(), step.getValue(), body.getValue());
+        var result = new ForStatement(indexer.getValue(), start.getValue(), end.getValue(), step.getValue(),
+                                      body.getValue()
+        );
         return ParserResult.ok(result, body.getRemaining());
     }
 

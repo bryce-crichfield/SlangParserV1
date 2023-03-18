@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public interface FileUtils {
 
-    public static Optional<String> read(String path) {
+    static Optional<String> read(String path) {
         var file = new java.io.File(path);
         if (!file.exists()) {
             return Optional.empty();

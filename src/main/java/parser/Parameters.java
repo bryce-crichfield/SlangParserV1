@@ -21,9 +21,9 @@ public class Parameters implements Node {
         }
 
         var typedIdentifiers = Parse.zeroOrMoreSeparatedBy(
-            lParenToken.getRemaining(),
-            TypedIdentifier::parse,
-            Optional.of(TokenKind.COMMA)
+                lParenToken.getRemaining(),
+                TypedIdentifier::parse,
+                Optional.of(TokenKind.COMMA)
         );
 
         var rParenToken = Parse.token(typedIdentifiers.getRemaining(), TokenKind.RPAREN);

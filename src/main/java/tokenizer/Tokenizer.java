@@ -2,9 +2,7 @@ package tokenizer;
 
 import util.View;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class Tokenizer {
@@ -17,6 +15,19 @@ public class Tokenizer {
         this.input = input.toCharArray();
         this.index = 0;
         this.output = new java.util.ArrayList<>();
+    }
+
+    public static View<Token> tokenize(String input) {
+        var tokenizer = new Tokenizer(input);
+        var tokenizerResult = tokenizer.tokenize();
+        if (tokenizerResult.isError()) {
+            System.out.println(tokenizerResult.getMessage());
+            return View.empty();
+        }
+        var tokens = tokenizerResult.getTokens();
+        tokens = tokens.stream().filter(token -> token.kind() != TokenKind.WHITESPACE).toList();
+
+        return View.of(tokens);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -53,19 +64,6 @@ public class Tokenizer {
         }
 
         return TokenizerResult.ok(output);
-    }
-
-    public static View<Token> tokenize(String input) {
-        var tokenizer = new Tokenizer(input);
-        var tokenizerResult = tokenizer.tokenize();
-        if (tokenizerResult.isError()) {
-            System.out.println(tokenizerResult.getMessage());
-            return View.empty();
-        }
-        var tokens = tokenizerResult.getTokens();
-        tokens = tokens.stream().filter(token -> token.kind() != TokenKind.WHITESPACE).toList();
-
-        return View.of(tokens);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

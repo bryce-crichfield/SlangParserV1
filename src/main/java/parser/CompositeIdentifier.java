@@ -4,7 +4,6 @@ import tokenizer.Token;
 import tokenizer.TokenKind;
 import util.View;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
