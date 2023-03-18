@@ -38,7 +38,7 @@ public class Expression implements Node {
             return ParserResult.error(view, term.getMessage());
         }
 
-        var plus = Parser.token(term.getRemaining(), TokenKind.PLUS);
+        var plus = Parse.token(term.getRemaining(), TokenKind.PLUS);
         if (plus.isOk()) {
             var expression = Expression.parse(plus.getRemaining());
             if (expression.isOk()) {
@@ -47,7 +47,7 @@ public class Expression implements Node {
             }
         }
 
-        var minus = Parser.token(term.getRemaining(), TokenKind.MINUS);
+        var minus = Parse.token(term.getRemaining(), TokenKind.MINUS);
         if (minus.isOk()) {
             var expression = Expression.parse(minus.getRemaining());
             if (expression.isOk()) {

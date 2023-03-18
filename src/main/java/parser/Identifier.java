@@ -12,7 +12,7 @@ public class Identifier implements Node {
     }
 
     public static ParserResult<Identifier> parse(View<Token> view) {
-        var token = Parser.token(view.clone(), TokenKind.IDENTIFIER);
+        var token = Parse.token(view.clone(), TokenKind.IDENTIFIER);
         if (token.isError()) {
             return ParserResult.error(view, token.getMessage());
         }

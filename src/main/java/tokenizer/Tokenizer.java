@@ -1,5 +1,7 @@
 package tokenizer;
 
+import util.View;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,19 @@ public class Tokenizer {
         return TokenizerResult.ok(output);
     }
 
+    public static View<Token> tokenize(String input) {
+        var tokenizer = new Tokenizer(input);
+        var tokenizerResult = tokenizer.tokenize();
+        if (tokenizerResult.isError()) {
+            System.out.println(tokenizerResult.getMessage());
+            return View.empty();
+        }
+        var tokens = tokenizerResult.getTokens();
+        tokens = tokens.stream().filter(token -> token.kind() != TokenKind.WHITESPACE).toList();
+
+        return View.of(tokens);
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     private Boolean tokenizeKeywords() {
         var pairs = new java.util.HashMap<String, TokenKind>();
@@ -64,13 +79,13 @@ public class Tokenizer {
         pairs.put("true", TokenKind.TRUE);
         pairs.put("false", TokenKind.FALSE);
         pairs.put("return", TokenKind.RETURN);
-        pairs.put("for", TokenKind.FOR);
         pairs.put("while", TokenKind.WHILE);
         pairs.put("break", TokenKind.BREAK);
         pairs.put("continue", TokenKind.CONTINUE);
-        pairs.put("struct", TokenKind.STRUCT);
-        pairs.put("enum", TokenKind.ENUM);
-        pairs.put("import", TokenKind.IMPORT);
+        pairs.put("for", TokenKind.FOR);
+        pairs.put("until", TokenKind.UNTIL);
+        pairs.put("to", TokenKind.TO);
+        pairs.put("by", TokenKind.BY);
         pairs.put("util", TokenKind.DATA);
 
         pairs.put("+", TokenKind.PLUS);

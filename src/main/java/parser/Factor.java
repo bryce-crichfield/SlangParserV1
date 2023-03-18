@@ -8,15 +8,15 @@ import java.util.Optional;
 
 public class Factor implements Node {
     public Optional<Expression> expression = Optional.empty();
-    public Optional<Accessor> accessor = Optional.empty();
+    public Optional<CompositeIdentifier> compositeIdentifier = Optional.empty();
     public Optional<Number> number = Optional.empty();
 
     Factor(Expression expression) {
         this.expression = Optional.of(expression);
     }
 
-    Factor(Accessor accessor) {
-        this.accessor = Optional.of(accessor);
+    Factor(CompositeIdentifier compositeIdentifier) {
+        this.compositeIdentifier = Optional.of(compositeIdentifier);
     }
 
     Factor(Number number) {
@@ -30,17 +30,17 @@ public class Factor implements Node {
             return ParserResult.ok(factor, number.getRemaining());
         }
 
-        var accessor = Accessor.parse(view.clone());
-        if (accessor.isOk()) {
-            var factor = new Factor(accessor.getValue());
-            return ParserResult.ok(factor, accessor.getRemaining());
+        var compositeIdentifier = CompositeIdentifier.parse(view.clone());
+        if (compositeIdentifier.isOk()) {
+            var factor = new Factor(compositeIdentifier.getValue());
+            return ParserResult.ok(factor, compositeIdentifier.getRemaining());
         }
 
-        var leftParen = Parser.token(view.clone(), TokenKind.LPAREN);
+        var leftParen = Parse.token(view.clone(), TokenKind.LPAREN);
         if (leftParen.isOk()) {
             var expression = Expression.parse(leftParen.getRemaining());
             if (expression.isOk()) {
-                var rightParen = Parser.token(expression.getRemaining(), TokenKind.RPAREN);
+                var rightParen = Parse.token(expression.getRemaining(), TokenKind.RPAREN);
                 if (rightParen.isOk()) {
                     var factor = new Factor(expression.getValue());
                     return ParserResult.ok(factor, rightParen.getRemaining());
@@ -55,7 +55,7 @@ public class Factor implements Node {
     public void accept(NodeVisitor visitor) {
         visitor.enter(this);
         expression.ifPresent(e -> e.accept(visitor));
-        accessor.ifPresent(a -> a.accept(visitor));
+        compositeIdentifier.ifPresent(i -> i.accept(visitor));
         number.ifPresent(n -> n.accept(visitor));
         visitor.exit(this);
     }

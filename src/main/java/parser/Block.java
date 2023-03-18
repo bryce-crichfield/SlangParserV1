@@ -15,18 +15,18 @@ public class Block implements Node {
     }
 
     public static ParserResult<Block> parse(View<Token> view) {
-        var leftBrace = Parser.token(view.clone(), TokenKind.LBRACE);
+        var leftBrace = Parse.token(view.clone(), TokenKind.LBRACE);
         if (leftBrace.isError()) {
             return ParserResult.error(view, leftBrace.getMessage());
         }
 
-        var statements = Parser.zeroOrMore(leftBrace.getRemaining(), Statement::parse);
+        var statements = Parse.zeroOrMore(leftBrace.getRemaining(), Statement::parse);
         var statementList = new ArrayList<Statement>();
         if (statements.isOk()) {
             statementList.addAll(statements.getValue());
         }
 
-        var rightBrace = Parser.token(statements.getRemaining(), TokenKind.RBRACE);
+        var rightBrace = Parse.token(statements.getRemaining(), TokenKind.RBRACE);
         if (rightBrace.isError()) {
             return ParserResult.error(view, rightBrace.getMessage());
         }

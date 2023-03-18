@@ -27,7 +27,7 @@ public class Term implements Node {
             return ParserResult.error(view, factor.getMessage());
         }
 
-        var star = Parser.token(factor.getRemaining(), TokenKind.STAR);
+        var star = Parse.token(factor.getRemaining(), TokenKind.STAR);
         if (star.isOk()) {
             var term = Term.parse(star.getRemaining());
             if (term.isOk()) {
@@ -36,7 +36,7 @@ public class Term implements Node {
             }
         }
 
-        var slash = Parser.token(factor.getRemaining(), TokenKind.SLASH);
+        var slash = Parse.token(factor.getRemaining(), TokenKind.SLASH);
         if (slash.isOk()) {
             var term = Term.parse(slash.getRemaining());
             if (term.isOk()) {

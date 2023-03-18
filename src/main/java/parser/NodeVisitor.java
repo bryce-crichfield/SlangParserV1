@@ -1,7 +1,5 @@
 package parser;
 
-import java.lang.reflect.Type;
-
 public interface NodeVisitor {
     void enter(Program program);
 
@@ -11,9 +9,9 @@ public interface NodeVisitor {
 
     void exit(FunctionDeclaration function);
 
-    void enter(Parameter parameter);
+    void enter(Parameters parameters);
 
-    void exit(Parameter parameter);
+    void exit(Parameters parameters);
 
     void enter(DataDeclaration dataType);
 
@@ -65,9 +63,9 @@ public interface NodeVisitor {
     void enter(TypeSpecifier typeSpecifier);
     void exit(TypeSpecifier typeSpecifier);
 
-    void enter(Accessor accessor);
+    void enter(CompositeIdentifier compositeIdentifier);
 
-    void exit(Accessor accessor);
+    void exit(CompositeIdentifier compositeIdentifier);
 
     void enter(Identifier identifier);
 
@@ -76,4 +74,10 @@ public interface NodeVisitor {
     void enter(Number number);
 
     void exit(Number number);
+
+    void enter(TypedIdentifier typedIdentifier);
+    void exit(TypedIdentifier typedIdentifier);
+
+    void enter(ForStatement forStatement);
+    void exit(ForStatement forStatement);
 }

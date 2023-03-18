@@ -14,14 +14,14 @@ public class ReturnStatement implements Node {
     }
 
     public static ParserResult<ReturnStatement> parse(View<Token> view) {
-        var returnToken = Parser.token(view.clone(), TokenKind.RETURN);
+        var returnToken = Parse.token(view.clone(), TokenKind.RETURN);
         if (returnToken.isError()) {
             return ParserResult.error(view, returnToken.getMessage());
         }
 
-        var expression = Parser.optional(returnToken.getRemaining(), Expression::parse);
+        var expression = Parse.optional(returnToken.getRemaining(), Expression::parse);
 
-        var semicolon = Parser.token(expression.getRemaining(), TokenKind.SEMICOLON);
+        var semicolon = Parse.token(expression.getRemaining(), TokenKind.SEMICOLON);
         if (semicolon.isError()) {
             return ParserResult.error(view, semicolon.getMessage());
         }

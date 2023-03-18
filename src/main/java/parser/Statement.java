@@ -13,6 +13,7 @@ public class Statement implements Node {
     public Optional<DeclarationStatement> declarationStatement = Optional.empty();
     public Optional<Expression> expression = Optional.empty();
     public Optional<ReturnStatement> returnStatement = Optional.empty();
+    public Optional<ForStatement> forStatement = Optional.empty();
 
     Statement(IfStatement ifStatement) {
         this.ifStatement = Optional.of(ifStatement);
@@ -36,6 +37,10 @@ public class Statement implements Node {
 
     Statement(ReturnStatement returnStatement) {
         this.returnStatement = Optional.of(returnStatement);
+    }
+
+    Statement(ForStatement forStatement) {
+        this.forStatement = Optional.of(forStatement);
     }
 
     public static ParserResult<Statement> parse(View<Token> view) {
@@ -69,9 +74,15 @@ public class Statement implements Node {
             return ParserResult.ok(resultStatement, returnStatement.getRemaining());
         }
 
+        var forStatement = ForStatement.parse(view.clone());
+        if (forStatement.isOk()) {
+            var resultStatement = new Statement(forStatement.getValue());
+            return ParserResult.ok(resultStatement, forStatement.getRemaining());
+        }
+
         var expression = Expression.parse(view.clone());
         if (expression.isOk()) {
-            var semicolon = Parser.token(expression.getRemaining(), TokenKind.SEMICOLON);
+            var semicolon = Parse.token(expression.getRemaining(), TokenKind.SEMICOLON);
             if (semicolon.isOk()) {
                 var resultStatement = new Statement(expression.getValue());
                 return ParserResult.ok(resultStatement, semicolon.getRemaining());
@@ -87,6 +98,7 @@ public class Statement implements Node {
         whileStatement.ifPresent(s -> s.accept(visitor));
         assignmentStatement.ifPresent(s -> s.accept(visitor));
         declarationStatement.ifPresent(s -> s.accept(visitor));
+        forStatement.ifPresent(s -> s.accept(visitor));
         expression.ifPresent(e -> e.accept(visitor));
         visitor.exit(this);
     }
@@ -105,6 +117,9 @@ public class Statement implements Node {
         }
         if (declarationStatement.isPresent()) {
             return declarationStatement.toString();
+        }
+        if (forStatement.isPresent()) {
+            return forStatement.toString();
         }
         if (expression.isPresent()) {
             return expression.toString();

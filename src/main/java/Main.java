@@ -2,13 +2,8 @@ import parser.Expression;
 import parser.NodeVisitor;
 import util.FileUtils;
 import util.View;
-import parser.Parser;
-import tokenizer.Token;
 import tokenizer.TokenKind;
 import tokenizer.Tokenizer;
-import tokenizer.TokenizerResult;
-
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,31 +13,25 @@ public class Main {
             return;
         }
 
-        var test = testOpt.get();
+//        var test = testOpt.get();
+//
+//        var tokens = Tokenizer.tokenize("123.");
+//        tokens.forEach(System.out::println);
 
-        var tokenizer = new Tokenizer(test);
-        var tokenizerResult = tokenizer.tokenize();
-        if (tokenizerResult.isError()) {
-            System.out.println("Lex Error: " + tokenizerResult.getMessage());
-            return;
-        }
-        var tokens = tokenizerResult.getTokens();
-        tokens = tokens.stream().filter(token -> token.kind() != TokenKind.WHITESPACE).toList();
-
-        var result = Expression.parse(View.of(tokens));
-        if (result.isError()) {
-            System.out.println(result.getMessage());
-            return;
-        }
-
-        // Print the AST
-        var tree = result.getValue();
-        NodeVisitor visitor = new NodePrinter();
-        tree.accept(visitor);
-
-        // Interpret the AST
-        var interpreter = new ExpressionInterpreter();
-        tree.accept(interpreter);
-        System.out.println(interpreter.stack.pop());
+//        var result = Expression.parse(View.of(tokens));
+//        if (result.isError()) {
+//            System.out.println(result.getMessage());
+//            return;
+//        }
+//
+//        // Print the AST
+//        var tree = result.getValue();
+//        NodeVisitor visitor = new NodePrinter();
+//        tree.accept(visitor);
+//
+//        // Interpret the AST
+//        var interpreter = new ExpressionInterpreter();
+//        tree.accept(interpreter);
+//        System.out.println(interpreter.stack.pop());
     }
 }

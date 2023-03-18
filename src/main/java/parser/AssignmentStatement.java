@@ -5,21 +5,21 @@ import tokenizer.TokenKind;
 import util.View;
 
 public class AssignmentStatement implements Node {
-    public Accessor accessor;
+    public CompositeIdentifier compositeIdentifier;
     public Expression expression;
 
-    AssignmentStatement(Accessor accessor, Expression expression) {
-        this.accessor = accessor;
+    AssignmentStatement(CompositeIdentifier compositeIdentifier, Expression expression) {
+        this.compositeIdentifier = compositeIdentifier;
         this.expression = expression;
     }
 
     public static ParserResult<AssignmentStatement> parse(View<Token> view) {
-        var accessor = Accessor.parse(view.clone());
-        if (accessor.isError()) {
-            return ParserResult.error(view, accessor.getMessage());
+        var compositeIdentifier = CompositeIdentifier.parse(view.clone());
+        if (compositeIdentifier.isError()) {
+            return ParserResult.error(view, compositeIdentifier.getMessage());
         }
 
-        var equals = Parser.token(accessor.getRemaining(), TokenKind.EQUALS);
+        var equals = Parse.token(compositeIdentifier.getRemaining(), TokenKind.EQUALS);
         if (equals.isError()) {
             return ParserResult.error(view, equals.getMessage());
         }
@@ -29,18 +29,18 @@ public class AssignmentStatement implements Node {
             return ParserResult.error(view, expression.getMessage());
         }
 
-        var semicolon = Parser.token(expression.getRemaining(), TokenKind.SEMICOLON);
+        var semicolon = Parse.token(expression.getRemaining(), TokenKind.SEMICOLON);
         if (semicolon.isError()) {
             return ParserResult.error(view, semicolon.getMessage());
         }
 
-        var assignmentStatement = new AssignmentStatement(accessor.getValue(), expression.getValue());
+        var assignmentStatement = new AssignmentStatement(compositeIdentifier.getValue(), expression.getValue());
         return ParserResult.ok(assignmentStatement, semicolon.getRemaining());
     }
 
     public void accept(NodeVisitor visitor) {
         visitor.enter(this);
-        accessor.accept(visitor);
+        compositeIdentifier.accept(visitor);
         expression.accept(visitor);
         visitor.exit(this);
     }

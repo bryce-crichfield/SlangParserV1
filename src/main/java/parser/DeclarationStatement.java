@@ -18,7 +18,7 @@ public class DeclarationStatement implements Node {
     }
 
     public static ParserResult<DeclarationStatement> parse(View<Token> view) {
-        var letToken = Parser.token(view.clone(), TokenKind.LET);
+        var letToken = Parse.token(view.clone(), TokenKind.LET);
         if (letToken.isError()) {
             return ParserResult.error(view, letToken.getMessage());
         }
@@ -28,9 +28,9 @@ public class DeclarationStatement implements Node {
             return ParserResult.error(view, identifier.getMessage());
         }
 
-        var typeSpecifier = Parser.optional(letToken.getRemaining(), TypeSpecifier::parse);
+        var typeSpecifier = Parse.optional(letToken.getRemaining(), TypeSpecifier::parse);
 
-        var equals = Parser.token(typeSpecifier.getRemaining(), TokenKind.EQUALS);
+        var equals = Parse.token(typeSpecifier.getRemaining(), TokenKind.EQUALS);
         if (equals.isError()) {
             return ParserResult.error(view, equals.getMessage());
         }
@@ -40,7 +40,7 @@ public class DeclarationStatement implements Node {
             return ParserResult.error(view, expression.getMessage());
         }
 
-        var semiColon = Parser.token(expression.getRemaining(), TokenKind.SEMICOLON);
+        var semiColon = Parse.token(expression.getRemaining(), TokenKind.SEMICOLON);
         if (semiColon.isError()) {
             return ParserResult.error(view, semiColon.getMessage());
         }

@@ -22,12 +22,12 @@ public class IfStatement implements Node {
     }
 
     public static ParserResult<IfStatement> parse(View<Token> view) {
-        var ifToken = Parser.token(view.clone(), TokenKind.IF);
+        var ifToken = Parse.token(view.clone(), TokenKind.IF);
         if (ifToken.isError()) {
             return ParserResult.error(view, ifToken.getMessage());
         }
 
-        var leftParen = Parser.token(ifToken.getRemaining(), TokenKind.LPAREN);
+        var leftParen = Parse.token(ifToken.getRemaining(), TokenKind.LPAREN);
         if (leftParen.isError()) {
             return ParserResult.error(view, leftParen.getMessage());
         }
@@ -37,7 +37,7 @@ public class IfStatement implements Node {
             return ParserResult.error(view, expression.getMessage());
         }
 
-        var rightParen = Parser.token(expression.getRemaining(), TokenKind.RPAREN);
+        var rightParen = Parse.token(expression.getRemaining(), TokenKind.RPAREN);
         if (rightParen.isError()) {
             return ParserResult.error(view, rightParen.getMessage());
         }
@@ -48,8 +48,8 @@ public class IfStatement implements Node {
         }
 
         // Parse Zero Or More Else If Blocks
-        var elseIfs = Parser.zeroOrMore(thenBlock.getRemaining(), IfStatement::parseElseIfBlock);
-        var elseBlock = Parser.optional(elseIfs.getRemaining(), IfStatement::parseElseBlock);
+        var elseIfs = Parse.zeroOrMore(thenBlock.getRemaining(), IfStatement::parseElseIfBlock);
+        var elseBlock = Parse.optional(elseIfs.getRemaining(), IfStatement::parseElseBlock);
         var ifStatement = new IfStatement(expression.getValue(), thenBlock.getValue(), elseIfs.getValue(),
                                           elseBlock.getValue()
         );
@@ -57,12 +57,12 @@ public class IfStatement implements Node {
     }
 
     private static ParserResult<Block> parseElseIfBlock(View<Token> tokens) {
-        var elseToken = Parser.token(tokens.clone(), TokenKind.ELSE);
+        var elseToken = Parse.token(tokens.clone(), TokenKind.ELSE);
         if (elseToken.isError()) {
             return ParserResult.error(tokens, elseToken.getMessage());
         }
 
-        var ifToken = Parser.token(elseToken.getRemaining(), TokenKind.IF);
+        var ifToken = Parse.token(elseToken.getRemaining(), TokenKind.IF);
         if (ifToken.isError()) {
             return ParserResult.error(tokens, ifToken.getMessage());
         }
@@ -76,7 +76,7 @@ public class IfStatement implements Node {
     }
 
     private static ParserResult<Block> parseElseBlock(View<Token> tokens) {
-        var elseToken = Parser.token(tokens.clone(), TokenKind.ELSE);
+        var elseToken = Parse.token(tokens.clone(), TokenKind.ELSE);
         if (elseToken.isError()) {
             return ParserResult.error(tokens, elseToken.getMessage());
         }

@@ -18,7 +18,7 @@ public class DataDeclaration implements Node {
     }
 
     public static ParserResult<DataDeclaration> parse(View<Token> token) {
-        var dataToken = Parser.token(token.clone(), TokenKind.DATA);
+        var dataToken = Parse.token(token.clone(), TokenKind.DATA);
         if (dataToken.isError()) {
             return ParserResult.error(token, dataToken.getMessage());
         }
@@ -28,12 +28,12 @@ public class DataDeclaration implements Node {
             return ParserResult.error(token, identifier.getMessage());
         }
 
-        var leftBrace = Parser.token(identifier.getRemaining(), TokenKind.LBRACE);
+        var leftBrace = Parse.token(identifier.getRemaining(), TokenKind.LBRACE);
         if (leftBrace.isError()) {
             return ParserResult.error(token, leftBrace.getMessage());
         }
 
-        var declarations = Parser.zeroOrMoreSeparatedBy(
+        var declarations = Parse.zeroOrMoreSeparatedBy(
                 leftBrace.getRemaining(),
                 DeclarationStatement::parse,
                 Optional.empty()
@@ -43,7 +43,7 @@ public class DataDeclaration implements Node {
             declarationStatements.addAll(declarations.getValue());
         }
 
-        var rightBrace = Parser.token(declarations.getRemaining(), TokenKind.RBRACE);
+        var rightBrace = Parse.token(declarations.getRemaining(), TokenKind.RBRACE);
         if (rightBrace.isError()) {
             return ParserResult.error(token, rightBrace.getMessage());
         }

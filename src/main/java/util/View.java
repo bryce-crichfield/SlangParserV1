@@ -21,6 +21,10 @@ public class View<A> {
         return new View<>(tokens, 0, tokens.size());
     }
 
+    public static <A> View<A> empty() {
+        return new View<>(List.of(), 0, 0);
+    }
+
     public Optional<A> peek(int lookahead) {
         if (lookahead + start >= end) {
             return Optional.empty();

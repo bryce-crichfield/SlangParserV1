@@ -4,7 +4,7 @@ import tokenizer.Token;
 import tokenizer.TokenKind;
 import util.View;
 
-import static parser.Parser.token;
+import static parser.Parse.token;
 
 public class TypeSpecifier implements Node {
     Identifier type;

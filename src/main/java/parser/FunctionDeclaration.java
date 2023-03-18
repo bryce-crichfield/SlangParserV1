@@ -8,12 +8,12 @@ import java.util.List;
 
 public class FunctionDeclaration implements Node {
     public Identifier identifier;
-    public List<Parameter> parameters;
+    public Parameters parameters;
     public Identifier returnType;
     public Block block;
 
 
-    FunctionDeclaration(Identifier identifier, List<Parameter> parameters, Identifier type, Block block) {
+    FunctionDeclaration(Identifier identifier, Parameters parameters, Identifier type, Block block) {
         this.identifier = identifier;
         this.parameters = parameters;
         this.returnType = type;
@@ -21,7 +21,7 @@ public class FunctionDeclaration implements Node {
     }
 
     public static ParserResult<FunctionDeclaration> parse(View<Token> token) {
-        var fnToken = Parser.token(token.clone(), TokenKind.FN);
+        var fnToken = Parse.token(token.clone(), TokenKind.FN);
         if (fnToken.isError()) {
             return ParserResult.error(token, fnToken.getMessage());
         }
@@ -31,12 +31,12 @@ public class FunctionDeclaration implements Node {
             return ParserResult.error(token, identifier.getMessage());
         }
 
-        var parameters = Parameter.parse(identifier.getRemaining());
+        var parameters = Parameters.parse(identifier.getRemaining());
         if (parameters.isError()) {
             return ParserResult.error(token, parameters.getMessage());
         }
 
-        var colon = Parser.token(parameters.getRemaining(), TokenKind.COLON);
+        var colon = Parse.token(parameters.getRemaining(), TokenKind.COLON);
         if (colon.isError()) {
             return ParserResult.error(token, colon.getMessage());
         }
@@ -63,9 +63,7 @@ public class FunctionDeclaration implements Node {
     public void accept(NodeVisitor visitor) {
         visitor.enter(this);
         identifier.accept(visitor);
-        for (var parameter : parameters) {
-            parameter.accept(visitor);
-        }
+        parameters.accept(visitor);
         returnType.accept(visitor);
         block.accept(visitor);
         visitor.exit(this);

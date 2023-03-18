@@ -23,12 +23,12 @@ public class FunctionCall implements Node {
             return ParserResult.error(view, identifier.getMessage());
         }
 
-        var leftParen = Parser.token(identifier.getRemaining(), TokenKind.LPAREN);
+        var leftParen = Parse.token(identifier.getRemaining(), TokenKind.LPAREN);
         if (leftParen.isError()) {
             return ParserResult.error(view, leftParen.getMessage());
         }
 
-        var expressionList = Parser.oneOrMoreSeparatedBy(
+        var expressionList = Parse.oneOrMoreSeparatedBy(
                 leftParen.getRemaining(),
                 Expression::parse,
                 Optional.of(TokenKind.COMMA)
@@ -38,7 +38,7 @@ public class FunctionCall implements Node {
             arguments.addAll(expressionList.getValue());
         }
 
-        var rightParen = Parser.token(expressionList.getRemaining(), TokenKind.RPAREN);
+        var rightParen = Parse.token(expressionList.getRemaining(), TokenKind.RPAREN);
         if (rightParen.isError()) {
             return ParserResult.error(view, rightParen.getMessage());
         }

@@ -12,7 +12,7 @@ public class Number implements Node {
     }
 
     public static ParserResult<Number> parse(View<Token> view) {
-        var token = Parser.token(view.clone(), TokenKind.NUMBER);
+        var token = Parse.token(view.clone(), TokenKind.NUMBER);
         if (token.isError()) {
             return ParserResult.error(view, token.getMessage());
         }

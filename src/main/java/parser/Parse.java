@@ -2,7 +2,6 @@ package parser;
 
 import tokenizer.Token;
 import tokenizer.TokenKind;
-import util.Tuple;
 import util.View;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 // ---------------------------------------------------------------------------------------------------------------------
-public class Parser {
+public class Parse {
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Token> token(View<Token> view, TokenKind kind) {
         var token = view.peek(0);
@@ -25,32 +24,36 @@ public class Parser {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // Always succeeds, defaulting to the empty list if error.
     public static <A> ParserResult<List<A>> zeroOrMoreSeparatedBy(View<Token> view,
             Function<View<Token>, ParserResult<A>> parser,
             Optional<TokenKind> separator
     ) {
-        var accumulator = new ArrayList<A>();
+        var result = new ArrayList<A>();
         var remaining = view.clone();
 
-        while (true) {
-            var result = parser.apply(remaining);
-            if (result.isError()) {
-                return ParserResult.ok(accumulator, remaining);
+        do {
+            var value = parser.apply(remaining);
+            if (value.isError()) {
+                break;
             }
-            accumulator.add(result.getValue());
-            remaining = result.getRemaining();
+            result.add(value.getValue());
+            remaining = value.getRemaining();
 
             if (separator.isPresent()) {
-                var separatorResult = token(remaining, separator.get());
-                if (separatorResult.isError()) {
-                    return ParserResult.ok(accumulator, remaining);
+                var sep = token(remaining, separator.get());
+                if (sep.isError()) {
+                    break;
                 }
-                remaining = separatorResult.getRemaining();
+                remaining = sep.getRemaining();
             }
-        }
+        } while (true);
+
+        return ParserResult.ok(result, remaining);
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    // Always succeeds, defaulting to the empty list if error.
     public static <A> ParserResult<List<A>> zeroOrMore(View<Token> view,
             Function<View<Token>, ParserResult<A>> parser
     ) {
@@ -99,29 +102,8 @@ public class Parser {
     ) {
         return oneOrMoreSeparatedBy(view, parser, Optional.empty());
     }
-
     // -----------------------------------------------------------------------------------------------------------------
-    public static ParserResult<Tuple<Identifier, Identifier>> parseTypedIdentifier(View<Token> token) {
-        var identifier = Identifier.parse(token.clone());
-        if (identifier.isError()) {
-            return ParserResult.error(token, identifier.getMessage());
-        }
-
-        var colon = token(identifier.getRemaining(), TokenKind.COLON);
-        if (colon.isError()) {
-            return ParserResult.error(token, colon.getMessage());
-        }
-
-        var type = Identifier.parse(colon.getRemaining());
-        if (type.isError()) {
-            return ParserResult.error(token, type.getMessage());
-        }
-
-        var typedIdentifier = Tuple.of(identifier.getValue(), type.getValue());
-        return ParserResult.ok(typedIdentifier, type.getRemaining());
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
+    // Always succeeds, defaulting to the empty optional if error.
     public static <A> ParserResult<Optional<A>> optional(
             View<Token> view,
             Function<View<Token>, ParserResult<A>> parser

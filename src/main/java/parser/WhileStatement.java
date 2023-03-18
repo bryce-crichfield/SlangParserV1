@@ -14,12 +14,12 @@ public class WhileStatement implements Node {
     }
 
     public static ParserResult<WhileStatement> parse(View<Token> view) {
-        var whileToken = Parser.token(view.clone(), TokenKind.WHILE);
+        var whileToken = Parse.token(view.clone(), TokenKind.WHILE);
         if (whileToken.isError()) {
             return ParserResult.error(view, whileToken.getMessage());
         }
 
-        var leftParen = Parser.token(whileToken.getRemaining(), TokenKind.LPAREN);
+        var leftParen = Parse.token(whileToken.getRemaining(), TokenKind.LPAREN);
         if (leftParen.isError()) {
             return ParserResult.error(view, leftParen.getMessage());
         }
@@ -29,7 +29,7 @@ public class WhileStatement implements Node {
             return ParserResult.error(view, expression.getMessage());
         }
 
-        var rightParen = Parser.token(expression.getRemaining(), TokenKind.RPAREN);
+        var rightParen = Parse.token(expression.getRemaining(), TokenKind.RPAREN);
         if (rightParen.isError()) {
             return ParserResult.error(view, rightParen.getMessage());
         }

@@ -1,7 +1,5 @@
 package parser;
 
-import java.lang.reflect.Type;
-
 public abstract class NodeVisitorAdapter implements NodeVisitor {
 
     public abstract void defaultEnter(Node node);
@@ -29,13 +27,13 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
-    public void enter(Parameter parameter) {
-        defaultEnter(parameter);
+    public void enter(Parameters parameters) {
+        defaultEnter(parameters);
     }
 
     @Override
-    public void exit(Parameter parameter) {
-        defaultExit(parameter);
+    public void exit(Parameters parameters) {
+        defaultExit(parameters);
     }
 
     @Override
@@ -169,13 +167,13 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
-    public void enter(Accessor accessor) {
-        defaultEnter(accessor);
+    public void enter(CompositeIdentifier compositeIdentifier) {
+        defaultEnter(compositeIdentifier);
     }
 
     @Override
-    public void exit(Accessor accessor) {
-        defaultExit(accessor);
+    public void exit(CompositeIdentifier compositeIdentifier) {
+        defaultExit(compositeIdentifier);
     }
 
     @Override
@@ -196,5 +194,25 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     @Override
     public void exit(Number number) {
         defaultExit(number);
+    }
+
+    @Override
+    public void enter(TypedIdentifier typedIdentifier) {
+        defaultEnter(typedIdentifier);
+    }
+
+    @Override
+    public void exit(TypedIdentifier typedIdentifier) {
+        defaultExit(typedIdentifier);
+    }
+
+    @Override
+    public void enter(ForStatement forStatement) {
+        defaultEnter(forStatement);
+    }
+
+    @Override
+    public void exit(ForStatement forStatement) {
+        defaultExit(forStatement);
     }
 }
