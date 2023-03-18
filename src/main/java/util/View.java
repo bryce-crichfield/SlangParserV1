@@ -1,4 +1,4 @@
-package data;
+package util;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,5 +44,11 @@ public class View<A> {
     @Override
     public View<A> clone() {
         return new View<>(data, start, end);
+    }
+
+    public void forEach(java.util.function.Consumer<A> consumer) {
+        for (int i = start; i < end; i++) {
+            consumer.accept(data.get(i));
+        }
     }
 }

@@ -5,5 +5,13 @@ public record Identifier(String name) implements Node {
         return new Identifier(name);
     }
 
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        visitor.exit(this);
+    }
+
+    public String toString() {
+        return name;
+    }
 }
 

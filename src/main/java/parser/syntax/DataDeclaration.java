@@ -6,5 +6,14 @@ public record DataDeclaration(Identifier identifier, List<DeclarationStatement> 
     public static DataDeclaration of(Identifier identifier, List<DeclarationStatement> declarations) {
         return new DataDeclaration(identifier, declarations);
     }
+
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        identifier.accept(visitor);
+        for (var declaration : declarations) {
+            declaration.accept(visitor);
+        }
+        visitor.exit(this);
+    }
 }
 

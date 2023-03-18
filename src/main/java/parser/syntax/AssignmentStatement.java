@@ -1,8 +1,15 @@
 package parser.syntax;
 
-public record AssignmentStatement(Identifier identifier, Expression expression) implements Node {
-    public static AssignmentStatement of(Identifier identifier, Expression expression) {
-        return new AssignmentStatement(identifier, expression);
+public record AssignmentStatement(Accessor accessor, Expression expression) implements Node {
+    public static AssignmentStatement of(Accessor accessor, Expression expression) {
+        return new AssignmentStatement(accessor, expression);
+    }
+
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        accessor.accept(visitor);
+        expression.accept(visitor);
+        visitor.exit(this);
     }
 }
 

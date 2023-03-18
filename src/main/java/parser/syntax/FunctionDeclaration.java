@@ -9,4 +9,15 @@ public record FunctionDeclaration(Identifier identifier, List<Parameter> paramet
     ) {
         return new FunctionDeclaration(identifier, parameters, type, block);
     }
+
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        identifier.accept(visitor);
+        for (var parameter : parameters) {
+            parameter.accept(visitor);
+        }
+        type.accept(visitor);
+        block.accept(visitor);
+        visitor.exit(this);
+    }
 }

@@ -1,6 +1,6 @@
-import data.View;
-import parser.NodeListener;
-import parser.NodeVisitor;
+import parser.syntax.NodeVisitor;
+import util.FileUtils;
+import util.View;
 import parser.Parser;
 import parser.ParserResult;
 import parser.syntax.Program;
@@ -13,7 +13,13 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String test = "fn add(): int { call(x); let x: int = 2;}";
+        var testOpt = FileUtils.read("src/main/java/test.slang");
+        if (testOpt.isEmpty()) {
+            System.out.println("Could not read test file");
+            return;
+        }
+
+        var test = testOpt.get();
 
         Tokenizer tokenizer = new Tokenizer(test);
         TokenizerResult tokenizerResult = tokenizer.tokenize();
@@ -32,8 +38,7 @@ public class Main {
 
         // Print the AST
         Program tree = result.getValue();
-        NodeListener listener = new NodePrinter();
-        NodeVisitor visitor = new NodeVisitor(listener);
-        visitor.visit(tree);
+        NodeVisitor visitor = new NodePrinter();
+        tree.accept(visitor);
     }
 }

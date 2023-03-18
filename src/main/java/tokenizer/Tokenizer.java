@@ -71,7 +71,7 @@ public class Tokenizer {
         pairs.put("struct", TokenKind.STRUCT);
         pairs.put("enum", TokenKind.ENUM);
         pairs.put("import", TokenKind.IMPORT);
-        pairs.put("data", TokenKind.DATA);
+        pairs.put("util", TokenKind.DATA);
 
         pairs.put("+", TokenKind.PLUS);
         pairs.put("-", TokenKind.MINUS);

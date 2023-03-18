@@ -10,5 +10,16 @@ public record Term(Term term, TokenKind operator, Factor factor) implements Node
     public static Term of(Factor factor) {
         return new Term(null, null, factor);
     }
+
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        if (term != null) {
+            term.accept(visitor);
+        }
+        if (factor != null) {
+            factor.accept(visitor);
+        }
+        visitor.exit(this);
+    }
 }
 

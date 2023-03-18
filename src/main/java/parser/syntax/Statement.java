@@ -27,4 +27,24 @@ public record Statement(
     public static Statement of(Expression expression) {
         return new Statement(null, null, null, null, expression);
     }
+
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        if (ifStatement != null) {
+            ifStatement.accept(visitor);
+        }
+        if (whileStatement != null) {
+            whileStatement.accept(visitor);
+        }
+        if (assignmentStatement != null) {
+            assignmentStatement.accept(visitor);
+        }
+        if (declarationStatement != null) {
+            declarationStatement.accept(visitor);
+        }
+        if (expression != null) {
+            expression.accept(visitor);
+        }
+        visitor.exit(this);
+    }
 }

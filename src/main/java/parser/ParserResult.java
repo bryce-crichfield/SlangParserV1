@@ -1,6 +1,6 @@
 package parser;
 
-import data.View;
+import util.View;
 import tokenizer.Token;
 
 public class ParserResult<A> {
