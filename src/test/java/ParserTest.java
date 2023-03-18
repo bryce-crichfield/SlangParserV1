@@ -1,3 +1,6 @@
+import parser.Parser;
+import parser.ParserResult;
+import parser.syntax.Expression;
 import tokenizer.Token;
 import org.junit.jupiter.api.Test;
 import tokenizer.TokenKind;
@@ -8,11 +11,11 @@ import java.util.List;
 public class ParserTest {
     @Test
     void shouldParseNumber() {
-        var test = Token.of(TokenKind.NUMBER, "1", 0);
-        var tokens = List.of(test);
-        var view = View.of(tokens);
+        Token test = Token.of(TokenKind.NUMBER, "1", 0);
+        List<Token> tokens = List.of(test);
+        View<Token> view = View.of(tokens);
 
-        var result = parser.Parser.parseExpression(view);
+        ParserResult<Expression> result = Parser.parseExpression(view);
 
         assert result.isOk();
     }

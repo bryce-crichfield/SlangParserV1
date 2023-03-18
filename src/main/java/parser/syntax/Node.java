@@ -1,3 +1,4 @@
 package parser.syntax;
 
-public interface Node { }
+public interface Node {
+}

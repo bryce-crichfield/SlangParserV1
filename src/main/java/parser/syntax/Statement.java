@@ -5,8 +5,7 @@ public record Statement(
         WhileStatement whileStatement,
         AssignmentStatement assignmentStatement,
         DeclarationStatement declarationStatement,
-        Expression expression) implements Node
-{
+        Expression expression) implements Node {
 
 
     public static Statement of(IfStatement ifStatement) {

@@ -1,7 +1,7 @@
 import parser.NodeListener;
-import tokenizer.TokenKind;
-import parser.syntax.*;
 import parser.syntax.Number;
+import parser.syntax.*;
+import tokenizer.TokenKind;
 
 public class NodePrinter implements NodeListener {
     private int count = 0;
@@ -144,12 +144,13 @@ public class NodePrinter implements NodeListener {
 
     @Override
     public void enter(Application application) {
-
+        println("Application");
+        indent();
     }
 
     @Override
     public void exit(Application application) {
-
+        dedent();
     }
 
     @Override

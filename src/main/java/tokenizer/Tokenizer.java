@@ -1,12 +1,14 @@
 package tokenizer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class Tokenizer {
-    private int index;
     private final char[] input;
     private final List<Token> output;
+    private int index;
 
     // -----------------------------------------------------------------------------------------------------------------
     public Tokenizer(String input) {
@@ -14,6 +16,7 @@ public class Tokenizer {
         this.index = 0;
         this.output = new java.util.ArrayList<>();
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public TokenizerResult tokenize() {
         while (index < input.length) {
@@ -49,9 +52,10 @@ public class Tokenizer {
 
         return TokenizerResult.ok(output);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     private Boolean tokenizeKeywords() {
-        var pairs = new java.util.HashMap<String, TokenKind>();
+        HashMap<String, TokenKind> pairs = new java.util.HashMap<String, TokenKind>();
 
         pairs.put("let", TokenKind.LET);
         pairs.put("fn", TokenKind.FN);
@@ -83,8 +87,8 @@ public class Tokenizer {
         pairs.put(",", TokenKind.COMMA);
 
         pairs.put("=", TokenKind.EQUALS);
-        for (var pair: pairs.entrySet()) {
-            var match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
+        for (Map.Entry<String, TokenKind> pair : pairs.entrySet()) {
+            Optional<Token> match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
             if (match.isPresent()) {
                 output.add(match.get());
                 index += match.get().symbol().length();

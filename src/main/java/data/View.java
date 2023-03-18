@@ -16,7 +16,7 @@ public class View<A> {
         this.start = start;
         this.end = end;
     }
-    
+
     public static <A> View<A> of(List<A> tokens) {
         return new View<>(tokens, 0, tokens.size());
     }
@@ -27,6 +27,10 @@ public class View<A> {
         }
 
         return Optional.of(data.get(lookahead + start));
+    }
+
+    public boolean isEmpty() {
+        return start == end;
     }
 
     public View<A> pop() {

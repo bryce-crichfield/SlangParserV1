@@ -1,5 +1,6 @@
 package parser;
 
+import data.Tuple;
 import data.View;
 import parser.syntax.Number;
 import parser.syntax.*;
@@ -9,6 +10,7 @@ import tokenizer.TokenKind;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class Parser {
     // -----------------------------------------------------------------------------------------------------------------
@@ -22,10 +24,79 @@ public class Parser {
         }
         return ParserResult.ok(token.get(), view.pop());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
-    public static ParserResult<List<Token>> parseZeroOrMore(View<Token> view, TokenKind kind, TokenKind seperator) {
-        return ParserResult.error(view, "Not implemented");
+    private static <A> ParserResult<List<A>> parseZeroOrMoreSeparatedBy(View<Token> view,
+            Function<View<Token>, ParserResult<A>> parser,
+            Optional<TokenKind> separator
+    ) {
+        ArrayList<A> accumulator = new ArrayList<>();
+        View<Token> remaining = view.clone();
+
+        while (true) {
+            ParserResult<A> result = parser.apply(remaining);
+            if (result.isError()) {
+                return ParserResult.ok(accumulator, remaining);
+            }
+            accumulator.add(result.getValue());
+            remaining = result.getRemaining();
+
+            if (separator.isPresent()) {
+                ParserResult<Token> separatorResult = parseToken(remaining, separator.get());
+                if (separatorResult.isError()) {
+                    return ParserResult.ok(accumulator, remaining);
+                }
+                remaining = separatorResult.getRemaining();
+            }
+        }
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static <A> ParserResult<List<A>> parseZeroOrMore(View<Token> view,
+            Function<View<Token>, ParserResult<A>> parser
+    ) {
+        return parseZeroOrMoreSeparatedBy(view, parser, Optional.empty());
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    private static <A> ParserResult<List<A>> parseOneOrMoreSeparatedBy(View<Token> view,
+            Function<View<Token>, ParserResult<A>> parser,
+            Optional<TokenKind> separator
+    ) {
+        ArrayList<A> accumulator = new ArrayList<>();
+        View<Token> remaining = view.clone();
+
+        ParserResult<A> result = parser.apply(remaining);
+        if (result.isError()) {
+            return ParserResult.error(view, result.getMessage());
+        }
+
+        accumulator.add(result.getValue());
+
+        while (separator.isPresent()) {
+            ParserResult<Token> separatorResult = parseToken(result.getRemaining(), separator.get());
+            if (separatorResult.isError()) {
+                return ParserResult.ok(accumulator, result.getRemaining());
+            }
+
+            result = parser.apply(separatorResult.getRemaining());
+            if (result.isError()) {
+                return ParserResult.error(view, result.getMessage());
+            }
+
+            accumulator.add(result.getValue());
+        }
+
+        return ParserResult.ok(accumulator, result.getRemaining());
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static <A> ParserResult<List<A>> parseOneOrMore(View<Token> view,
+            Function<View<Token>, ParserResult<A>> parser
+    ) {
+        return parseOneOrMoreSeparatedBy(view, parser, Optional.empty());
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Number> parseNumber(View<Token> view) {
         ParserResult<Token> token = parseToken(view.clone(), TokenKind.NUMBER);
@@ -45,6 +116,28 @@ public class Parser {
         Identifier identifier = Identifier.of(token.getValue().symbol());
         return ParserResult.ok(identifier, token.getRemaining());
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<Tuple<Identifier, Identifier>> parseTypedIdentifier(View<Token> token) {
+        ParserResult<Identifier> identifier = parseIdentifier(token.clone());
+        if (identifier.isError()) {
+            return ParserResult.error(token, identifier.getMessage());
+        }
+
+        ParserResult<Token> colon = parseToken(identifier.getRemaining(), TokenKind.COLON);
+        if (colon.isError()) {
+            return ParserResult.error(token, colon.getMessage());
+        }
+
+        ParserResult<Identifier> type = parseIdentifier(colon.getRemaining());
+        if (type.isError()) {
+            return ParserResult.error(token, type.getMessage());
+        }
+
+        Tuple<Identifier, Identifier> typedIdentifier = Tuple.of(identifier.getValue(), type.getValue());
+        return ParserResult.ok(typedIdentifier, type.getRemaining());
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Factor> parseFactor(View<Token> view) {
         ParserResult<Number> number = parseNumber(view.clone());
@@ -73,6 +166,7 @@ public class Parser {
 
         return ParserResult.error(view, "Expected factor or Number or Identifier");
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Term> parseTerm(View<Token> view) {
         ParserResult<Factor> factor = parseFactor(view.clone());
@@ -100,13 +194,43 @@ public class Parser {
 
         return ParserResult.ok(Term.of(factor.getValue()), factor.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
-    public static ParserResult<Application> parseApplication(View<Token> view) {
-        System.out.println("Not implemented");
-        return ParserResult.error(view, "Not implemented");
+    public static ParserResult<Application> parseApplicationExpression(View<Token> view) {
+        ParserResult<Identifier> identifier = parseIdentifier(view.clone());
+        if (identifier.isError()) {
+            return ParserResult.error(view, identifier.getMessage());
+        }
+
+        ParserResult<Token> leftParen = parseToken(identifier.getRemaining(), TokenKind.LPAREN);
+        if (leftParen.isError()) {
+            return ParserResult.error(view, leftParen.getMessage());
+        }
+
+        ParserResult<List<Expression>> expressionList = parseOneOrMoreSeparatedBy(leftParen.getRemaining(),
+                Parser::parseExpression, Optional.of(TokenKind.COMMA));
+        ArrayList<Expression> arguments = new ArrayList<>();
+        if (expressionList.isOk()) {
+            arguments.addAll(expressionList.getValue());
+        }
+
+        ParserResult<Token> rightParen = parseToken(expressionList.getRemaining(), TokenKind.RPAREN);
+        if (rightParen.isError()) {
+            return ParserResult.error(view, rightParen.getMessage());
+        }
+
+        Application application = Application.of(identifier.getValue(), arguments);
+        return ParserResult.ok(application, rightParen.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Expression> parseExpression(View<Token> view) {
+        ParserResult<Application> application = parseApplicationExpression(view.clone());
+        if (application.isOk()) {
+            Expression expression = Expression.of(application.getValue());
+            return ParserResult.ok(expression, application.getRemaining());
+        }
+
         ParserResult<Term> term = parseTerm(view.clone());
         if (term.isError()) {
             return ParserResult.error(view, term.getMessage());
@@ -132,6 +256,7 @@ public class Parser {
 
         return ParserResult.ok(Expression.of(term.getValue()), term.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Block> parseBlock(View<Token> view) {
         ParserResult<Token> leftBrace = parseToken(view.clone(), TokenKind.LBRACE);
@@ -139,25 +264,21 @@ public class Parser {
             return ParserResult.error(view, leftBrace.getMessage());
         }
 
-        ArrayList<Statement> statements = new java.util.ArrayList<Statement>();
-        View<Token> remaining = leftBrace.getRemaining();
-        while (true) {
-            ParserResult<Statement> statement = parseStatement(remaining.clone());
-            if (statement.isError()) {
-                break;
-            }
-            statements.add(statement.getValue());
-            remaining = statement.getRemaining();
+        ParserResult<List<Statement>> statements = parseZeroOrMore(leftBrace.getRemaining(), Parser::parseStatement);
+        ArrayList<Statement> statementList = new ArrayList<>();
+        if (statements.isOk()) {
+            statementList.addAll(statements.getValue());
         }
 
-        ParserResult<Token> rightBrace = parseToken(remaining.clone(), TokenKind.RBRACE);
+        ParserResult<Token> rightBrace = parseToken(statements.getRemaining(), TokenKind.RBRACE);
         if (rightBrace.isError()) {
             return ParserResult.error(view, rightBrace.getMessage());
         }
 
-        Block block = Block.of(statements);
+        Block block = Block.of(statementList);
         return ParserResult.ok(block, rightBrace.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<IfStatement> parseIfStatement(View<Token> view) {
         ParserResult<Token> ifToken = parseToken(view.clone(), TokenKind.IF);
@@ -199,6 +320,7 @@ public class Parser {
         IfStatement ifStatement = IfStatement.of(expression.getValue(), thenBlock.getValue());
         return ParserResult.ok(ifStatement, thenBlock.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<WhileStatement> parseWhileStatement(View<Token> view) {
         ParserResult<Token> whileToken = parseToken(view.clone(), TokenKind.WHILE);
@@ -229,6 +351,7 @@ public class Parser {
         WhileStatement whileStatement = WhileStatement.of(expression.getValue(), block.getValue());
         return ParserResult.ok(whileStatement, block.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<AssignmentStatement> parseAssignmentStatement(View<Token> view) {
         ParserResult<Identifier> identifier = parseIdentifier(view.clone());
@@ -254,6 +377,7 @@ public class Parser {
         AssignmentStatement assignmentStatement = AssignmentStatement.of(identifier.getValue(), expression.getValue());
         return ParserResult.ok(assignmentStatement, semicolon.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<DeclarationStatement> parseDeclarationStatement(View<Token> view) {
         ParserResult<Token> letToken = parseToken(view.clone(), TokenKind.LET);
@@ -261,22 +385,12 @@ public class Parser {
             return ParserResult.error(view, letToken.getMessage());
         }
 
-        ParserResult<Identifier> identifier = parseIdentifier(letToken.getRemaining());
-        if (identifier.isError()) {
-            return ParserResult.error(view, identifier.getMessage());
+        ParserResult<Tuple<Identifier, Identifier>> typedIdentifier = parseTypedIdentifier(letToken.getRemaining());
+        if (typedIdentifier.isError()) {
+            return ParserResult.error(view, typedIdentifier.getMessage());
         }
 
-        ParserResult<Token> colon = parseToken(identifier.getRemaining(), TokenKind.COLON);
-        if (colon.isError()) {
-            return ParserResult.error(view, colon.getMessage());
-        }
-
-        ParserResult<Identifier> type = parseIdentifier(colon.getRemaining());
-        if (type.isError()) {
-            return ParserResult.error(view, type.getMessage());
-        }
-
-        ParserResult<Token> equals = parseToken(type.getRemaining(), TokenKind.EQUALS);
+        ParserResult<Token> equals = parseToken(typedIdentifier.getRemaining(), TokenKind.EQUALS);
         if (equals.isError()) {
             return ParserResult.error(view, equals.getMessage());
         }
@@ -291,9 +405,12 @@ public class Parser {
             return ParserResult.error(view, semiColon.getMessage());
         }
 
-        DeclarationStatement declarationStatement = DeclarationStatement.of(identifier.getValue(), type.getValue(), expression.getValue());
+        Identifier id = typedIdentifier.getValue().first();
+        Identifier type = typedIdentifier.getValue().second();
+        DeclarationStatement declarationStatement = DeclarationStatement.of(id, type, expression.getValue());
         return ParserResult.ok(declarationStatement, semiColon.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Statement> parseStatement(View<Token> view) {
         ParserResult<IfStatement> ifStatement = parseIfStatement(view.clone());
@@ -331,6 +448,7 @@ public class Parser {
 
         return ParserResult.error(view, "Expected statement");
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<DataDeclaration> parseDataDeclaration(View<Token> token) {
         ParserResult<Token> dataToken = parseToken(token.clone(), TokenKind.DATA);
@@ -338,7 +456,7 @@ public class Parser {
             return ParserResult.error(token, dataToken.getMessage());
         }
 
-        var identifier = parseIdentifier(dataToken.getRemaining());
+        ParserResult<Identifier> identifier = parseIdentifier(dataToken.getRemaining());
         if (identifier.isError()) {
             return ParserResult.error(token, identifier.getMessage());
         }
@@ -348,19 +466,14 @@ public class Parser {
             return ParserResult.error(token, leftBrace.getMessage());
         }
 
-        // Match zero or more declaration statements
+        ParserResult<List<DeclarationStatement>> declarations = parseZeroOrMoreSeparatedBy(leftBrace.getRemaining(),
+                Parser::parseDeclarationStatement, Optional.empty());
         ArrayList<DeclarationStatement> declarationStatements = new ArrayList<>();
-        View<Token> remaining = leftBrace.getRemaining();
-        while (true) {
-            ParserResult<DeclarationStatement> declarationStatement = parseDeclarationStatement(remaining.clone());
-            if (declarationStatement.isError()) {
-                break;
-            }
-            declarationStatements.add(declarationStatement.getValue());
-            remaining = declarationStatement.getRemaining();
+        if (declarations.isOk()) {
+            declarationStatements.addAll(declarations.getValue());
         }
 
-        ParserResult<Token> rightBrace = parseToken(remaining, TokenKind.RBRACE);
+        ParserResult<Token> rightBrace = parseToken(declarations.getRemaining(), TokenKind.RBRACE);
         if (rightBrace.isError()) {
             return ParserResult.error(token, rightBrace.getMessage());
         }
@@ -368,122 +481,93 @@ public class Parser {
         DataDeclaration dataDeclaration = DataDeclaration.of(identifier.getValue(), declarationStatements);
         return ParserResult.ok(dataDeclaration, rightBrace.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<List<Parameter>> parseParameters(View<Token> token) {
-        var lParenToken = parseToken(token.clone(), TokenKind.LPAREN);
+        ParserResult<Token> lParenToken = parseToken(token.clone(), TokenKind.LPAREN);
         if (lParenToken.isError()) {
             return ParserResult.error(token, lParenToken.getMessage());
         }
 
-        var rParenToken = parseToken(lParenToken.getRemaining(), TokenKind.RPAREN);
+        // Short circuit if there are no parameters
+        ParserResult<Token> rParenToken = parseToken(lParenToken.getRemaining(), TokenKind.RPAREN);
         if (rParenToken.isOk()) {
             return ParserResult.ok(List.of(), rParenToken.getRemaining());
         }
 
-        var parameters = new ArrayList<Parameter>();
-        var remaining = lParenToken.getRemaining();
-
-        var identifier = parseIdentifier(remaining.clone());
-        if (identifier.isError()) {
-            return ParserResult.error(token, identifier.getMessage());
+        ParserResult<List<Tuple<Identifier, Identifier>>> typedIdentifiers = parseOneOrMoreSeparatedBy(
+                lParenToken.getRemaining(), Parser::parseTypedIdentifier,
+                Optional.of(TokenKind.COMMA));
+        ArrayList<Parameter> parameters = new ArrayList<Parameter>();
+        if (typedIdentifiers.isOk()) {
+            for (Tuple<Identifier, Identifier> typedIdentifier : typedIdentifiers.getValue()) {
+                parameters.add(Parameter.of(typedIdentifier.first(), typedIdentifier.second()));
+            }
         }
 
-        var colon = parseToken(identifier.getRemaining(), TokenKind.COLON);
-        if (colon.isError()) {
-            return ParserResult.error(token, colon.getMessage());
-        }
-
-        var type = parseIdentifier(colon.getRemaining());
-        if (type.isError()) {
-            return ParserResult.error(token, type.getMessage());
-        }
-
-        parameters.add(Parameter.of(identifier.getValue(), type.getValue()));
-        remaining = type.getRemaining();
-
-        while (true) {
-            var comma = parseToken(remaining.clone(), TokenKind.COMMA);
-            if (comma.isError()) {
-                break;
-            }
-
-            identifier = parseIdentifier(comma.getRemaining());
-            if (identifier.isError()) {
-                return ParserResult.error(token, identifier.getMessage());
-            }
-
-            colon = parseToken(identifier.getRemaining(), TokenKind.COLON);
-            if (colon.isError()) {
-                return ParserResult.error(token, colon.getMessage());
-            }
-
-            type = parseIdentifier(colon.getRemaining());
-            if (type.isError()) {
-                return ParserResult.error(token, type.getMessage());
-            }
-
-            parameters.add(Parameter.of(identifier.getValue(), type.getValue()));
-            remaining = type.getRemaining();
-        }
-
-        rParenToken = parseToken(remaining.clone(), TokenKind.RPAREN);
+        rParenToken = parseToken(typedIdentifiers.getRemaining(), TokenKind.RPAREN);
         if (rParenToken.isError()) {
             return ParserResult.error(token, rParenToken.getMessage());
         }
 
         return ParserResult.ok(parameters, rParenToken.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<FunctionDeclaration> parseFunctionDeclaration(View<Token> token) {
-        var fnToken = parseToken(token.clone(), TokenKind.FN);
+        ParserResult<Token> fnToken = parseToken(token.clone(), TokenKind.FN);
         if (fnToken.isError()) {
             return ParserResult.error(token, fnToken.getMessage());
         }
 
-        var identifier = parseIdentifier(fnToken.getRemaining());
+        ParserResult<Identifier> identifier = parseIdentifier(fnToken.getRemaining());
         if (identifier.isError()) {
             return ParserResult.error(token, identifier.getMessage());
         }
 
-        var parameters = parseParameters(identifier.getRemaining());
+        ParserResult<List<Parameter>> parameters = parseParameters(identifier.getRemaining());
         if (parameters.isError()) {
             return ParserResult.error(token, parameters.getMessage());
         }
 
-        var colon = parseToken(parameters.getRemaining(), TokenKind.COLON);
+        ParserResult<Token> colon = parseToken(parameters.getRemaining(), TokenKind.COLON);
         if (colon.isError()) {
             return ParserResult.error(token, colon.getMessage());
         }
 
-        var type = parseIdentifier(colon.getRemaining());
+        ParserResult<Identifier> type = parseIdentifier(colon.getRemaining());
         if (type.isError()) {
             return ParserResult.error(token, type.getMessage());
         }
 
-        var block = parseBlock(type.getRemaining());
+        ParserResult<Block> block = parseBlock(type.getRemaining());
         if (block.isError()) {
             return ParserResult.error(token, block.getMessage());
         }
 
-        var declaration = FunctionDeclaration.of(identifier.getValue(), parameters.getValue(), type.getValue(), block.getValue());
+        FunctionDeclaration declaration = FunctionDeclaration.of(identifier.getValue(), parameters.getValue(),
+                type.getValue(), block.getValue());
         return ParserResult.ok(declaration, block.getRemaining());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Program> parseProgram(View<Token> token) {
-        var remaining = token.clone();
-        var functions = new ArrayList<FunctionDeclaration>();
-        var data = new ArrayList<DataDeclaration>();
+        View<Token> remaining = token.clone();
+
+        ArrayList<FunctionDeclaration> functions = new ArrayList<FunctionDeclaration>();
+        ArrayList<DataDeclaration> data = new ArrayList<DataDeclaration>();
 
         while (true) {
-            var function = parseFunctionDeclaration(remaining.clone());
+            ParserResult<FunctionDeclaration> function = parseFunctionDeclaration(remaining.clone());
             if (function.isOk()) {
                 functions.add(function.getValue());
                 remaining = function.getRemaining();
                 continue;
             }
 
-            var dataDeclaration = parseDataDeclaration(remaining.clone());
+            ParserResult<DataDeclaration> dataDeclaration = parseDataDeclaration(remaining.clone());
             if (dataDeclaration.isOk()) {
+
                 data.add(dataDeclaration.getValue());
                 remaining = dataDeclaration.getRemaining();
                 continue;
@@ -492,8 +576,12 @@ public class Parser {
             break;
         }
 
-        var program = Program.of(functions, data);
-        return ParserResult.ok(program, remaining);
+        if (!remaining.isEmpty()) {
+            return ParserResult.error(token, "Unexpected end of program, unconsumed tokens: " + remaining);
+        } else {
+            Program program = Program.of(functions, data);
+            return ParserResult.ok(program, remaining);
+        }
     }
     // -----------------------------------------------------------------------------------------------------------------
 }
