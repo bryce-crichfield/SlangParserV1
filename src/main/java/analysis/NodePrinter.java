@@ -1,3 +1,5 @@
+package analysis;
+
 import parser.Identifier;
 import parser.Node;
 import parser.NodeVisitorAdapter;
