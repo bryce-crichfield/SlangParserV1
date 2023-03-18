@@ -4,14 +4,15 @@ import tokenizer.Token;
 import tokenizer.TokenKind;
 import util.View;
 
+import java.util.Optional;
+
 public class FunctionDeclaration implements Node {
     public Identifier identifier;
     public Parameters parameters;
-    public Identifier returnType;
+    public Optional<TypeSpecifier> returnType;
     public Block block;
 
-
-    FunctionDeclaration(Identifier identifier, Parameters parameters, Identifier type, Block block) {
+    FunctionDeclaration(Identifier identifier, Parameters parameters, Optional<TypeSpecifier> type, Block block) {
         this.identifier = identifier;
         this.parameters = parameters;
         this.returnType = type;
@@ -34,17 +35,10 @@ public class FunctionDeclaration implements Node {
             return ParserResult.error(token, parameters.getMessage());
         }
 
-        var colon = Parse.token(parameters.getRemaining(), TokenKind.COLON);
-        if (colon.isError()) {
-            return ParserResult.error(token, colon.getMessage());
-        }
+        var typeSpecifier = Parse.optional(parameters.getRemaining(), TypeSpecifier::parse);
 
-        var type = Identifier.parse(colon.getRemaining());
-        if (type.isError()) {
-            return ParserResult.error(token, type.getMessage());
-        }
 
-        var block = Block.parse(type.getRemaining());
+        var block = Block.parse(typeSpecifier.getRemaining());
         if (block.isError()) {
             return ParserResult.error(token, block.getMessage());
         }
@@ -52,7 +46,7 @@ public class FunctionDeclaration implements Node {
         var declaration = new FunctionDeclaration(
                 identifier.getValue(),
                 parameters.getValue(),
-                type.getValue(),
+                typeSpecifier.getValue(),
                 block.getValue()
         );
         return ParserResult.ok(declaration, block.getRemaining());
@@ -62,7 +56,7 @@ public class FunctionDeclaration implements Node {
         visitor.enter(this);
         identifier.accept(visitor);
         parameters.accept(visitor);
-        returnType.accept(visitor);
+        returnType.ifPresent(type -> type.accept(visitor));
         block.accept(visitor);
         visitor.exit(this);
     }

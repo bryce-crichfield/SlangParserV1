@@ -11,13 +11,13 @@ public class Term implements Node {
     public Optional<TokenKind> operator = Optional.empty();
     public Optional<Factor> factor = Optional.empty();
 
-    Term(Term term, TokenKind operator, Factor factor) {
+    public Term(Term term, TokenKind operator, Factor factor) {
         this.term = Optional.of(term);
         this.operator = Optional.of(operator);
         this.factor = Optional.of(factor);
     }
 
-    Term(Factor factor) {
+    public Term(Factor factor) {
         this.factor = Optional.of(factor);
     }
 

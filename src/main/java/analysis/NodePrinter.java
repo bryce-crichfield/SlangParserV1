@@ -6,6 +6,7 @@ import parser.NodeVisitorAdapter;
 import parser.Number;
 
 public class NodePrinter extends NodeVisitorAdapter {
+    private final StringBuilder sb = new StringBuilder();
     private int count = 0;
 
     private void indent() {
@@ -17,10 +18,8 @@ public class NodePrinter extends NodeVisitorAdapter {
     }
 
     private void println(String message) {
-        for (var i = 0; i < count; i++) {
-            System.out.print(".");
-        }
-        System.out.println(message);
+        sb.append(".".repeat(Math.max(0, count)));
+        sb.append(message).append("\n");
     }
 
     public void defaultEnter(Node node) {
@@ -42,6 +41,11 @@ public class NodePrinter extends NodeVisitorAdapter {
     public void exit(Identifier identifier) {
         println("name: " + identifier.value);
         super.exit(identifier);
+    }
+
+    public String toString() {
+
+        return sb.toString();
     }
 }
 

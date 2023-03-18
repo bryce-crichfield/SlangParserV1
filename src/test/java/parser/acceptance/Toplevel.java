@@ -1,6 +1,7 @@
 package parser.acceptance;
 
 import org.junit.jupiter.api.Test;
+import parser.DataDeclaration;
 import parser.FunctionDeclaration;
 import parser.Parameters;
 
@@ -18,24 +19,29 @@ public class Toplevel implements AcceptanceTest {
 
     @Test
     void testParameters() {
-        var cases = List.of("abc: int, def: num");
+        var cases = new ArrayList<String>();
+        cases.add("(abc: int, def: int)");
+        cases.add("(abc: int)");
+        cases.add("()");
         assertAllOk(cases, Parameters::parse);
     }
 
     @Test
     void testFunctionDefinition() {
         var cases = new ArrayList<String>();
-        cases.add("def f(): int { return 1; }");
-        cases.add("def f(abc: int, def: num): int { return 1; }");
-        cases.add("def f(abc: int, def: num) { return abc + def; }");
-        cases.add("def f() { abc = 1; def = 2; }");
+        cases.add("fn f(): int { return 1; }");
+        cases.add("fn f(abc: int, def: num): int { return 1; }");
+        cases.add("fn f(abc: int, def: num) { return abc + def; }");
+        cases.add("fn f() { abc = 1; def = 2; }");
         assertAllOk(cases, FunctionDeclaration::parse);
     }
 
     @Test
     void testDataDeclaration() {
         var cases = new ArrayList<String>();
+        cases.add("data A { }");
+        cases.add("data A { abc: int }");
         cases.add("data A { x: num, y: num }");
-        assertAllOk(cases, FunctionDeclaration::parse);
+        assertAllOk(cases, DataDeclaration::parse);
     }
 }

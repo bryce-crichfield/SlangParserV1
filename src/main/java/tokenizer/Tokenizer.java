@@ -84,7 +84,7 @@ public class Tokenizer {
         pairs.put("until", TokenKind.UNTIL);
         pairs.put("to", TokenKind.TO);
         pairs.put("by", TokenKind.BY);
-        pairs.put("util", TokenKind.DATA);
+        pairs.put("data", TokenKind.DATA);
 
         pairs.put("+", TokenKind.PLUS);
         pairs.put("-", TokenKind.MINUS);

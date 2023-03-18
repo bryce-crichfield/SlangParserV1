@@ -16,13 +16,13 @@ public class Expression implements Node {
         this.functionCall = Optional.of(functionCall);
     }
 
-    Expression(Expression expression, TokenKind operator, Term term) {
+    public Expression(Expression expression, TokenKind operator, Term term) {
         this.expression = Optional.of(expression);
         this.operator = Optional.of(operator);
         this.term = Optional.of(term);
     }
 
-    Expression(Term term) {
+    public Expression(Term term) {
         this.term = Optional.of(term);
     }
 

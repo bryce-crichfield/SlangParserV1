@@ -7,7 +7,7 @@ import util.View;
 public class Number implements Node {
     public double value;
 
-    Number(double value) {
+    public Number(double value) {
         this.value = value;
     }
 

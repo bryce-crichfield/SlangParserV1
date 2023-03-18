@@ -1,0 +1,27 @@
+data Point {
+    x: int,
+    y: int
+}
+
+fn add(p1: Point, p2: Point): Point {
+    let px = p1.x + p2.x;
+    let py = p1.y + p2.y;
+    return Point(px, py);
+}
+
+fn main() {
+    let p1 = Point(1, 2);
+    let p2 = Point(3, 4);
+    let p3 = add(p1, p2);
+
+    if (p3.x == 3) {
+        println("x is 3");
+    }
+
+    if (p3.y == 4) {
+        println("y is 4");
+    }
+
+    return 0;
+}
+

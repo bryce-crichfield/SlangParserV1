@@ -11,15 +11,15 @@ public class Factor implements Node {
     public Optional<CompositeIdentifier> compositeIdentifier = Optional.empty();
     public Optional<Number> number = Optional.empty();
 
-    Factor(Expression expression) {
+    public Factor(Expression expression) {
         this.expression = Optional.of(expression);
     }
 
-    Factor(CompositeIdentifier compositeIdentifier) {
+    public Factor(CompositeIdentifier compositeIdentifier) {
         this.compositeIdentifier = Optional.of(compositeIdentifier);
     }
 
-    Factor(Number number) {
+    public Factor(Number number) {
         this.number = Optional.of(number);
     }
 
