@@ -57,7 +57,7 @@ public class ForStatement implements Node {
             return ParserResult.error(view, end.getMessage());
         }
 
-        var step = Parse.optional(end.getRemaining(), Expression::parse);
+        var step = Parse.optional(end.getRemaining(), ForStatement::parseStep);
 
         var rParen = Parse.token(step.getRemaining(), TokenKind.RPAREN);
         if (rParen.isError()) {
@@ -69,8 +69,12 @@ public class ForStatement implements Node {
             return ParserResult.error(view, body.getMessage());
         }
 
-        var result = new ForStatement(indexer.getValue(), start.getValue(), end.getValue(), step.getValue(),
-                                      body.getValue()
+        var result = new ForStatement(
+                indexer.getValue(),
+                start.getValue(),
+                end.getValue(),
+                step.getValue(),
+                body.getValue()
         );
         return ParserResult.ok(result, body.getRemaining());
     }

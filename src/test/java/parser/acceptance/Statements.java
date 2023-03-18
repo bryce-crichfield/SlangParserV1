@@ -35,8 +35,10 @@ public class Statements implements AcceptanceTest {
     @Test
     void testForStatements() {
         ArrayList<String> cases = new ArrayList<>();
+        cases.add("for (i: 0 until 10) { b = 1; }");
+        cases.add("for (i: (0 + 3) to 10) { b = 1; }");
         cases.add("for (i: 0 until 10 by 1) { b = 1; }");
-        cases.add("for (i: (0 + 3) to 10 by 1) { b = 1; }");
+        cases.add("for (i: (0 + 3) to 10 by 2) { b = 1; }");
         assertAllOk(cases, ForStatement::parse);
     }
 
@@ -51,7 +53,7 @@ public class Statements implements AcceptanceTest {
     @Test
     void testDeclarationStatements() {
         ArrayList<String> cases = new ArrayList<>();
-
+        cases.add("let a = 1;");
         cases.add("let a: int = 1;");
         cases.add("let a: int = 1 + 2;");
         cases.add("let a = 1 + 2 * 3;");

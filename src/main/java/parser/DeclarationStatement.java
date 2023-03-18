@@ -28,7 +28,7 @@ public class DeclarationStatement implements Node {
             return ParserResult.error(view, identifier.getMessage());
         }
 
-        var typeSpecifier = Parse.optional(letToken.getRemaining(), TypeSpecifier::parse);
+        var typeSpecifier = Parse.optional(identifier.getRemaining(), TypeSpecifier::parse);
 
         var equals = Parse.token(typeSpecifier.getRemaining(), TokenKind.EQUALS);
         if (equals.isError()) {
