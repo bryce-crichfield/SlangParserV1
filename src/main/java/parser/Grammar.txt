@@ -23,12 +23,12 @@ declaration_statement : 'let' IDENTIFIER ':' IDENTIFIER '=' expression ';'
 
 assignment_statement : accessor '=' expression ';'
 
-expression: application
+expression: functionCall
     | expression '+' term
     | expression '-' term
     | term
 
-application: IDENTIFIER '(' expression_list? ')' ';'
+functionCall: IDENTIFIER '(' expression_list? ')' ';'
 
 expression_list : expression (',' expression)*
 

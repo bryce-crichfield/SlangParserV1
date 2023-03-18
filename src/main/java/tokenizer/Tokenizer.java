@@ -55,7 +55,7 @@ public class Tokenizer {
 
     // -----------------------------------------------------------------------------------------------------------------
     private Boolean tokenizeKeywords() {
-        HashMap<String, TokenKind> pairs = new java.util.HashMap<String, TokenKind>();
+        var pairs = new java.util.HashMap<String, TokenKind>();
 
         pairs.put("let", TokenKind.LET);
         pairs.put("fn", TokenKind.FN);
@@ -85,10 +85,11 @@ public class Tokenizer {
         pairs.put(";", TokenKind.SEMICOLON);
         pairs.put(":", TokenKind.COLON);
         pairs.put(",", TokenKind.COMMA);
+        pairs.put(".", TokenKind.DOT);
 
         pairs.put("=", TokenKind.EQUALS);
-        for (Map.Entry<String, TokenKind> pair : pairs.entrySet()) {
-            Optional<Token> match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
+        for (var pair : pairs.entrySet()) {
+            var match = Match.keyword(pair.getKey(), pair.getValue(), input, index);
             if (match.isPresent()) {
                 output.add(match.get());
                 index += match.get().symbol().length();

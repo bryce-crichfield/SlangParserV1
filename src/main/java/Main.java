@@ -1,9 +1,8 @@
-import parser.syntax.NodeVisitor;
+import parser.Expression;
+import parser.NodeVisitor;
 import util.FileUtils;
 import util.View;
 import parser.Parser;
-import parser.ParserResult;
-import parser.syntax.Program;
 import tokenizer.Token;
 import tokenizer.TokenKind;
 import tokenizer.Tokenizer;
@@ -21,24 +20,29 @@ public class Main {
 
         var test = testOpt.get();
 
-        Tokenizer tokenizer = new Tokenizer(test);
-        TokenizerResult tokenizerResult = tokenizer.tokenize();
+        var tokenizer = new Tokenizer(test);
+        var tokenizerResult = tokenizer.tokenize();
         if (tokenizerResult.isError()) {
             System.out.println("Lex Error: " + tokenizerResult.getMessage());
             return;
         }
-        List<Token> tokens = tokenizerResult.getTokens();
+        var tokens = tokenizerResult.getTokens();
         tokens = tokens.stream().filter(token -> token.kind() != TokenKind.WHITESPACE).toList();
 
-        ParserResult<Program> result = Parser.parseProgram(View.of(tokens));
+        var result = Expression.parse(View.of(tokens));
         if (result.isError()) {
             System.out.println(result.getMessage());
             return;
         }
 
         // Print the AST
-        Program tree = result.getValue();
+        var tree = result.getValue();
         NodeVisitor visitor = new NodePrinter();
         tree.accept(visitor);
+
+        // Interpret the AST
+        var interpreter = new ExpressionInterpreter();
+        tree.accept(interpreter);
+        System.out.println(interpreter.stack.pop());
     }
 }

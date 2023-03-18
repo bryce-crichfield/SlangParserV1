@@ -47,7 +47,7 @@ public class View<A> {
     }
 
     public void forEach(java.util.function.Consumer<A> consumer) {
-        for (int i = start; i < end; i++) {
+        for (var i = start; i < end; i++) {
             consumer.accept(data.get(i));
         }
     }

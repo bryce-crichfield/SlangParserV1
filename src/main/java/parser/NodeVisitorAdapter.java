@@ -1,10 +1,11 @@
-package parser.syntax;
+package parser;
 
-import tokenizer.Token;
+import java.lang.reflect.Type;
 
 public abstract class NodeVisitorAdapter implements NodeVisitor {
 
     public abstract void defaultEnter(Node node);
+
     public abstract void defaultExit(Node node);
 
     @Override
@@ -58,6 +59,16 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
+    public void enter(ReturnStatement returnStatement) {
+        defaultEnter(returnStatement);
+    }
+
+    @Override
+    public void exit(ReturnStatement returnStatement) {
+        defaultExit(returnStatement);
+    }
+
+    @Override
     public void enter(IfStatement ifStatement) {
         defaultEnter(ifStatement);
     }
@@ -108,13 +119,13 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     }
 
     @Override
-    public void enter(Application application) {
-        defaultEnter(application);
+    public void enter(FunctionCall functionCall) {
+        defaultEnter(functionCall);
     }
 
     @Override
-    public void exit(Application application) {
-        defaultExit(application);
+    public void exit(FunctionCall functionCall) {
+        defaultExit(functionCall);
     }
 
     @Override
@@ -145,6 +156,16 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     @Override
     public void exit(Block block) {
         defaultExit(block);
+    }
+
+    @Override
+    public void enter(TypeSpecifier typeSpecifier) {
+        defaultEnter(typeSpecifier);
+    }
+
+    @Override
+    public void exit(TypeSpecifier typeSpecifier) {
+        defaultExit(typeSpecifier);
     }
 
     @Override
