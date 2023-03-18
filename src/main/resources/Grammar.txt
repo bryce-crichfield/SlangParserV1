@@ -1,3 +1,29 @@
+NonTerminals {
+    program,
+    data_declaration,
+    function_declaration,
+    parameters,
+    statement,
+    if_statement,
+    while_statement,
+    return_statement,
+    for_statement,
+    continue_statement,
+    break_statement,
+    use_statement,
+    variable_declaration,
+    expression,
+    function_call,
+    term,
+    factor,
+    typed_identifier,
+    type_specifier,
+    identifier,
+    number,
+    string,
+}
+
+
 program: (data_declaration | function_declaration)+
 
 data_declaration : (IDENTIFIER ':' IDENTIFIER ',')+

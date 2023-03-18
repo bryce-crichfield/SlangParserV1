@@ -18,7 +18,8 @@ public class Parse {
             return ParserResult.error(view, "Unexpected end of input");
         }
         if (token.get().kind() != kind) {
-            return ParserResult.error(view, "Expected " + kind + " but got " + token.get().kind());
+            var position = token.get().position();
+            return ParserResult.error(view, "Expected " + kind + " but got " + token.get().kind() + " at " + position);
         }
         return ParserResult.ok(token.get(), view.pop());
     }
@@ -102,6 +103,7 @@ public class Parse {
     ) {
         return oneOrMoreSeparatedBy(view, parser, Optional.empty());
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     // Always succeeds, defaulting to the empty optional if error.
     public static <A> ParserResult<Optional<A>> optional(

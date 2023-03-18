@@ -12,22 +12,35 @@ import java.util.logging.Logger;
 public interface AcceptanceTest {
     Logger getLogger();
 
-    private <A> void execute(AcceptanceCase<A> testCase) {
-        var tokens = Tokenizer.tokenize(testCase.input());
-        var result = testCase.parser().apply(tokens);
-        if (result.isError()) {
-            getLogger().info("Failed to accept input: " + testCase.input() + " with error: " + result.getMessage());
-            if (!result.getRemaining().isEmpty()) {
-                getLogger().info("Unconsumed input: " + result.getRemaining());
+    default <A> void assertAllOk(List<String> testCases, Function<View<Token>, ParserResult<A>> parser) {
+        for (var testCase : testCases) {
+            var tokens = Tokenizer.tokenize(testCase);
+            var result = parser.apply(tokens);
+            if (result.isError()) {
+                getLogger().info("Failed to accept input: " + testCase + " with error: " + result.getMessage());
+                if (!result.getRemaining().isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    result.getRemaining().forEach(token -> sb.append(token.toString()).append("\n"));
+                    getLogger().info("Unconsumed input: " + sb);
+                }
             }
+            assert result.isOk();
         }
-        assert result.isOk();
     }
 
-    public default <A> void executeAll(List<String> testCases, Function<View<Token>, ParserResult<A>> parser) {
+    default <A> void assertAllError(List<String> testCases, Function<View<Token>, ParserResult<A>> parser) {
         for (var testCase : testCases) {
-            var acceptanceCase = new AcceptanceCase<>(testCase, parser);
-            this.execute(acceptanceCase);
+            var tokens = Tokenizer.tokenize(testCase);
+            var result = parser.apply(tokens);
+            if (result.isOk()) {
+                getLogger().info("Expected test case: " + testCase + " to fail");
+                if (!result.getRemaining().isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    result.getRemaining().forEach(token -> sb.append(token.toString()));
+                    getLogger().info("Unconsumed input: " + sb);
+                }
+            }
+            assert result.isError();
         }
     }
 }
