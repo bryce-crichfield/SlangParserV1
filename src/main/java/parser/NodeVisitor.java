@@ -21,6 +21,14 @@ public interface NodeVisitor {
 
     void exit(Statement statement);
 
+    void enter(UseStatement useStatement);
+
+    void exit(UseStatement useStatement);
+
+    void enter(ErrorStatement errorStatement);
+
+    void exit(ErrorStatement errorStatement);
+
     void enter(ReturnStatement returnStatement);
 
     void exit(ReturnStatement returnStatement);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Statements implements AcceptanceTest {
+    // -----------------------------------------------------------------------------------------------------------------
     private static final Logger LOGGER = Logger.getLogger(Statements.class.getName());
 
     @Override
@@ -15,12 +16,14 @@ public class Statements implements AcceptanceTest {
         return LOGGER;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testAssignments() {
         var cases = List.of("a = 1;", "a = 1 + 2;", "a = 1 + 2 * 3;");
         assertAllOk(cases, AssignmentStatement::parse);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testIfStatements() {
         ArrayList<String> cases = new ArrayList<>();
@@ -32,6 +35,7 @@ public class Statements implements AcceptanceTest {
         assertAllOk(cases, IfStatement::parse);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testForStatements() {
         ArrayList<String> cases = new ArrayList<>();
@@ -42,6 +46,7 @@ public class Statements implements AcceptanceTest {
         assertAllOk(cases, ForStatement::parse);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testWhileStatements() {
         ArrayList<String> cases = new ArrayList<>();
@@ -50,6 +55,7 @@ public class Statements implements AcceptanceTest {
         assertAllOk(cases, WhileStatement::parse);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testDeclarationStatements() {
         ArrayList<String> cases = new ArrayList<>();
@@ -65,6 +71,7 @@ public class Statements implements AcceptanceTest {
         assertAllError(cases, DeclarationStatement::parse);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testReturnStatements() {
         ArrayList<String> cases = new ArrayList<>();
@@ -74,5 +81,33 @@ public class Statements implements AcceptanceTest {
         cases.add("return 1 + 2 * 3;");
         assertAllOk(cases, ReturnStatement::parse);
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    @Test
+    void testUseStatements() {
+        ArrayList<String> cases = new ArrayList<>();
+        cases.add("use (a) { a = 2; }");
+        cases.add("use (b, c) { a = 2; }");
+        assertAllOk(cases, UseStatement::parse);
+
+        cases.clear();
+        cases.add("use () { a = 2; }");
+        assertAllError(cases, UseStatement::parse);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    @Test
+    void testErrorStatement() {
+        ArrayList<String> cases = new ArrayList<>();
+
+        cases.add("error (message);");
+        assertAllOk(cases, ErrorStatement::parse);
+
+        cases.clear();
+        cases.add("error (message, a);");
+        cases.add("error (message, a, b);");
+        assertAllError(cases, ErrorStatement::parse);
+    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

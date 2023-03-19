@@ -7,10 +7,12 @@ import util.View;
 import java.util.Optional;
 
 public class Term implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Optional<Term> term = Optional.empty();
     public Optional<TokenKind> operator = Optional.empty();
     public Optional<Factor> factor = Optional.empty();
 
+    // -----------------------------------------------------------------------------------------------------------------
     public Term(Term term, TokenKind operator, Factor factor) {
         this.term = Optional.of(term);
         this.operator = Optional.of(operator);
@@ -21,6 +23,16 @@ public class Term implements Node {
         this.factor = Optional.of(factor);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        term.ifPresent(t -> t.accept(visitor));
+        // TODO: add visitor for operator
+        factor.ifPresent(f -> f.accept(visitor));
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Term> parse(View<Token> view) {
         var factor = Factor.parse(view.clone());
         if (factor.isError()) {
@@ -48,13 +60,6 @@ public class Term implements Node {
         var resultTerm = new Term(factor.getValue());
         return ParserResult.ok(resultTerm, factor.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        term.ifPresent(t -> t.accept(visitor));
-        // TODO: add visitor for operator
-        factor.ifPresent(f -> f.accept(visitor));
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

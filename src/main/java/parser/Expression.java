@@ -7,10 +7,12 @@ import util.View;
 import java.util.Optional;
 
 public class Expression implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Optional<Expression> expression = Optional.empty();
     public Optional<TokenKind> operator = Optional.empty();
     public Optional<Term> term = Optional.empty();
     public Optional<FunctionCall> functionCall = Optional.empty();
+    // -----------------------------------------------------------------------------------------------------------------
 
     Expression(FunctionCall functionCall) {
         this.functionCall = Optional.of(functionCall);
@@ -26,6 +28,16 @@ public class Expression implements Node {
         this.term = Optional.of(term);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        expression.ifPresent(e -> e.accept(visitor));
+        term.ifPresent(t -> t.accept(visitor));
+        functionCall.ifPresent(f -> f.accept(visitor));
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Expression> parse(View<Token> view) {
         var functionCall = FunctionCall.parse(view.clone());
         if (functionCall.isOk()) {
@@ -59,13 +71,6 @@ public class Expression implements Node {
         var expression = new Expression(term.getValue());
         return ParserResult.ok(expression, term.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        expression.ifPresent(e -> e.accept(visitor));
-        term.ifPresent(t -> t.accept(visitor));
-        functionCall.ifPresent(f -> f.accept(visitor));
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

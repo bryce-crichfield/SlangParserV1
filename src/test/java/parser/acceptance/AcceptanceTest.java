@@ -10,8 +10,9 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 public interface AcceptanceTest {
+    // -----------------------------------------------------------------------------------------------------------------
     Logger getLogger();
-
+    // -----------------------------------------------------------------------------------------------------------------
     default <A> void assertAllOk(List<String> testCases, Function<View<Token>, ParserResult<A>> parser) {
         for (var testCase : testCases) {
             var tokens = Tokenizer.tokenize(testCase);
@@ -27,7 +28,7 @@ public interface AcceptanceTest {
             assert result.isOk();
         }
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     default <A> void assertAllError(List<String> testCases, Function<View<Token>, ParserResult<A>> parser) {
         for (var testCase : testCases) {
             var tokens = Tokenizer.tokenize(testCase);
@@ -43,4 +44,5 @@ public interface AcceptanceTest {
             assert result.isError();
         }
     }
+    // -----------------------------------------------------------------------------------------------------------------
 }

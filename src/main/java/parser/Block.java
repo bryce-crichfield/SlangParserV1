@@ -8,12 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Block implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public List<Statement> statements;
 
+    // -----------------------------------------------------------------------------------------------------------------
     public Block(List<Statement> statements) {
         this.statements = statements;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        for (var statement : statements) {
+            statement.accept(visitor);
+        }
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Block> parse(View<Token> view) {
         var leftBrace = Parse.token(view.clone(), TokenKind.LBRACE);
         if (leftBrace.isError()) {
@@ -34,13 +46,5 @@ public class Block implements Node {
         var block = new Block(statementList);
         return ParserResult.ok(block, rightBrace.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        for (var statement : statements) {
-            statement.accept(visitor);
-        }
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
-

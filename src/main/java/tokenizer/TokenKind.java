@@ -2,20 +2,27 @@ package tokenizer;
 
 public enum TokenKind {
     // Keywords
-    LET, FN, IF, ELSE, DATA, RETURN, CONTINUE, BREAK,
+    LET, FN, DATA,
+    IF, ELSE,
+    RETURN, CONTINUE, BREAK,
     WHILE,
-    // For Loop
+    USE,
+    ERROR, YIELD,
     FOR, UNTIL, TO, BY,
+
+
     // Delimiters
-    LPAREN, RPAREN, LBRACE, RBRACE,
-    LBRACKET, RBRACKET,
+    LPAREN, RPAREN, LBRACE, RBRACE, LSQUARE, RSQUARE,
     COMMA, SEMICOLON, DOT, COLON,
 
-    // Operators
-    PLUS, MINUS, STAR, SLASH,
-    EQUALS,
+    // Binary Operators
+    PLUS, MINUS, STAR, SLASH, PERCENT, POW, AND, OR,
+    EQ, NEQ, LT, GT, LTEQ, GTEQ,
+    ASSIGN,
+    // Unary Operators
+    NOT, NEG,
+    // Data Literals
+    IDENTIFIER, STRING, NUMBER, TRUE, FALSE, NULL,
+    // MISC.
     WHITESPACE,
-
-    // Data TYPES
-    IDENTIFIER, STRING, NUMBER, TRUE, FALSE,
 }

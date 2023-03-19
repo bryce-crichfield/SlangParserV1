@@ -7,16 +7,28 @@ import util.View;
 import java.util.Optional;
 
 public class DeclarationStatement implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Identifier identifier;
     public Optional<TypeSpecifier> typeSpecifier;
     public Expression expression;
 
+    // -----------------------------------------------------------------------------------------------------------------
     DeclarationStatement(Identifier identifier, Optional<TypeSpecifier> typeSpecifier, Expression expression) {
         this.identifier = identifier;
         this.typeSpecifier = typeSpecifier;
         this.expression = expression;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        identifier.accept(visitor);
+        typeSpecifier.ifPresent(t -> t.accept(visitor));
+        expression.accept(visitor);
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<DeclarationStatement> parse(View<Token> view) {
         var letToken = Parse.token(view.clone(), TokenKind.LET);
         if (letToken.isError()) {
@@ -30,7 +42,7 @@ public class DeclarationStatement implements Node {
 
         var typeSpecifier = Parse.optional(identifier.getRemaining(), TypeSpecifier::parse);
 
-        var equals = Parse.token(typeSpecifier.getRemaining(), TokenKind.EQUALS);
+        var equals = Parse.token(typeSpecifier.getRemaining(), TokenKind.ASSIGN);
         if (equals.isError()) {
             return ParserResult.error(view, equals.getMessage());
         }
@@ -50,13 +62,6 @@ public class DeclarationStatement implements Node {
         var declarationStatement = new DeclarationStatement(id, type, expression.getValue());
         return ParserResult.ok(declarationStatement, semiColon.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        identifier.accept(visitor);
-        typeSpecifier.ifPresent(t -> t.accept(visitor));
-        expression.accept(visitor);
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

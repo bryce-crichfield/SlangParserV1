@@ -7,14 +7,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Program implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public List<FunctionDeclaration> functions;
     public List<DataDeclaration> dataTypes;
+    // -----------------------------------------------------------------------------------------------------------------
 
     Program(List<FunctionDeclaration> functions, List<DataDeclaration> dataTypes) {
         this.functions = functions;
         this.dataTypes = dataTypes;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        for (var function : functions) {
+            function.accept(visitor);
+        }
+
+        for (var dataType : dataTypes) {
+            dataType.accept(visitor);
+        }
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Program> parse(View<Token> token) {
         // TODO: Right now error messages are not propagated out the tree,
         // TODO: so we can't tell the user what went wrong. We should fix this.
@@ -53,16 +69,5 @@ public class Program implements Node {
             return ParserResult.ok(program, remaining);
         }
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        for (var function : functions) {
-            function.accept(visitor);
-        }
-
-        for (var dataType : dataTypes) {
-            dataType.accept(visitor);
-        }
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }

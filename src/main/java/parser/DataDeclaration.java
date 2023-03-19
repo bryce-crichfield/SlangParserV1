@@ -8,14 +8,27 @@ import java.util.List;
 import java.util.Optional;
 
 public class DataDeclaration implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Identifier identifier;
     public List<TypedIdentifier> typedIdentifiers;
 
+    // -----------------------------------------------------------------------------------------------------------------
     DataDeclaration(Identifier identifier, List<TypedIdentifier> typedIdentifiers) {
         this.identifier = identifier;
         this.typedIdentifiers = typedIdentifiers;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        identifier.accept(visitor);
+        for (var typedIdentifier : typedIdentifiers) {
+            typedIdentifier.accept(visitor);
+        }
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<DataDeclaration> parse(View<Token> token) {
         var dataToken = Parse.token(token.clone(), TokenKind.DATA);
         if (dataToken.isError()) {
@@ -46,14 +59,6 @@ public class DataDeclaration implements Node {
         var dataDeclaration = new DataDeclaration(identifier.getValue(), typedIdentifiers.getValue());
         return ParserResult.ok(dataDeclaration, rightBrace.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        identifier.accept(visitor);
-        for (var typedIdentifier : typedIdentifiers) {
-            typedIdentifier.accept(visitor);
-        }
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

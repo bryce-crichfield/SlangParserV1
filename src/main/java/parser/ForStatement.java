@@ -7,12 +7,14 @@ import util.View;
 import java.util.Optional;
 
 public class ForStatement implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     Identifier indexer;
     Expression start;
     Expression end;
     Optional<Expression> step;
     Block block;
 
+    // -----------------------------------------------------------------------------------------------------------------
     ForStatement(Identifier indexer, Expression start, Expression end, Optional<Expression> step, Block block) {
         this.indexer = indexer;
         this.start = start;
@@ -21,6 +23,19 @@ public class ForStatement implements Node {
         this.block = block;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        indexer.accept(visitor);
+        start.accept(visitor);
+        end.accept(visitor);
+        step.ifPresent(s -> s.accept(visitor));
+        block.accept(visitor);
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<ForStatement> parse(View<Token> view) {
         var forToken = Parse.token(view.clone(), TokenKind.FOR);
         if (forToken.isError()) {
@@ -79,6 +94,7 @@ public class ForStatement implements Node {
         return ParserResult.ok(result, body.getRemaining());
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private static ParserResult<TokenKind> parseCondition(View<Token> token) {
         var until = Parse.token(token.clone(), TokenKind.UNTIL);
         if (until.isOk()) {
@@ -93,6 +109,7 @@ public class ForStatement implements Node {
         return ParserResult.error(token, "Expected 'until' or 'to'");
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private static ParserResult<Expression> parseStep(View<Token> token) {
         var by = Parse.token(token.clone(), TokenKind.BY);
         if (by.isError()) {
@@ -106,15 +123,5 @@ public class ForStatement implements Node {
 
         return ParserResult.ok(step.getValue(), step.getRemaining());
     }
-
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        indexer.accept(visitor);
-        start.accept(visitor);
-        end.accept(visitor);
-        step.ifPresent(s -> s.accept(visitor));
-        block.accept(visitor);
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }

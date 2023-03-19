@@ -8,12 +8,22 @@ import java.util.List;
 import java.util.Optional;
 
 public class Parameters implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public List<TypedIdentifier> typedIdentifiers;
 
+    // -----------------------------------------------------------------------------------------------------------------
     Parameters(List<TypedIdentifier> typedIdentifiers) {
         this.typedIdentifiers = typedIdentifiers;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        typedIdentifiers.forEach(t -> t.accept(visitor));
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<Parameters> parse(View<Token> token) {
         var lParenToken = Parse.token(token.clone(), TokenKind.LPAREN);
         if (lParenToken.isError()) {
@@ -33,11 +43,6 @@ public class Parameters implements Node {
 
         return ParserResult.ok(new Parameters(typedIdentifiers.getValue()), rParenToken.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        typedIdentifiers.forEach(t -> t.accept(visitor));
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

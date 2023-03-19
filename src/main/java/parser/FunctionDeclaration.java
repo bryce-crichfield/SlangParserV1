@@ -7,11 +7,13 @@ import util.View;
 import java.util.Optional;
 
 public class FunctionDeclaration implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Identifier identifier;
     public Parameters parameters;
     public Optional<TypeSpecifier> returnType;
     public Block block;
 
+    // -----------------------------------------------------------------------------------------------------------------
     FunctionDeclaration(Identifier identifier, Parameters parameters, Optional<TypeSpecifier> type, Block block) {
         this.identifier = identifier;
         this.parameters = parameters;
@@ -19,6 +21,17 @@ public class FunctionDeclaration implements Node {
         this.block = block;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        identifier.accept(visitor);
+        parameters.accept(visitor);
+        returnType.ifPresent(type -> type.accept(visitor));
+        block.accept(visitor);
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<FunctionDeclaration> parse(View<Token> token) {
         var fnToken = Parse.token(token.clone(), TokenKind.FN);
         if (fnToken.isError()) {
@@ -51,13 +64,5 @@ public class FunctionDeclaration implements Node {
         );
         return ParserResult.ok(declaration, block.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        identifier.accept(visitor);
-        parameters.accept(visitor);
-        returnType.ifPresent(type -> type.accept(visitor));
-        block.accept(visitor);
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }

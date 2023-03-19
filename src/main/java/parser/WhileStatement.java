@@ -5,14 +5,25 @@ import tokenizer.TokenKind;
 import util.View;
 
 public class WhileStatement implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Expression condition;
     public Block block;
 
+    // -----------------------------------------------------------------------------------------------------------------
     WhileStatement(Expression condition, Block block) {
         this.condition = condition;
         this.block = block;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        condition.accept(visitor);
+        block.accept(visitor);
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<WhileStatement> parse(View<Token> view) {
         var whileToken = Parse.token(view.clone(), TokenKind.WHILE);
         if (whileToken.isError()) {
@@ -42,12 +53,6 @@ public class WhileStatement implements Node {
         var whileStatement = new WhileStatement(expression.getValue(), block.getValue());
         return ParserResult.ok(whileStatement, block.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        condition.accept(visitor);
-        block.accept(visitor);
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

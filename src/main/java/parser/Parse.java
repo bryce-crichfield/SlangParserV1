@@ -9,19 +9,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-// ---------------------------------------------------------------------------------------------------------------------
 public class Parse {
     // -----------------------------------------------------------------------------------------------------------------
-    public static ParserResult<Token> token(View<Token> view, TokenKind kind) {
-        var token = view.peek(0);
-        if (token.isEmpty()) {
-            return ParserResult.error(view, "Unexpected end of input");
+    // Always succeeds, defaulting to the empty list if error.
+    public static <A> ParserResult<List<A>> zeroOrMore(View<Token> view,
+            Function<View<Token>, ParserResult<A>> parser
+    ) {
+        var result = zeroOrMoreSeparatedBy(view, parser, Optional.empty());
+        if (result.isError()) {
+            return ParserResult.ok(new ArrayList<>(), view);
         }
-        if (token.get().kind() != kind) {
-            var position = token.get().position();
-            return ParserResult.error(view, "Expected " + kind + " but got " + token.get().kind() + " at " + position);
-        }
-        return ParserResult.ok(token.get(), view.pop());
+        return ParserResult.ok(result.getValue(), result.getRemaining());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -54,15 +52,23 @@ public class Parse {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    // Always succeeds, defaulting to the empty list if error.
-    public static <A> ParserResult<List<A>> zeroOrMore(View<Token> view,
+    public static ParserResult<Token> token(View<Token> view, TokenKind kind) {
+        var token = view.peek(0);
+        if (token.isEmpty()) {
+            return ParserResult.error(view, "Unexpected end of input");
+        }
+        if (token.get().kind() != kind) {
+            var position = token.get().position();
+            return ParserResult.error(view, "Expected " + kind + " but got " + token.get().kind() + " at " + position);
+        }
+        return ParserResult.ok(token.get(), view.pop());
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static <A> ParserResult<List<A>> oneOrMore(View<Token> view,
             Function<View<Token>, ParserResult<A>> parser
     ) {
-        var result = zeroOrMoreSeparatedBy(view, parser, Optional.empty());
-        if (result.isError()) {
-            return ParserResult.ok(new ArrayList<>(), view);
-        }
-        return ParserResult.ok(result.getValue(), result.getRemaining());
+        return oneOrMoreSeparatedBy(view, parser, Optional.empty());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -98,13 +104,6 @@ public class Parse {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    public static <A> ParserResult<List<A>> oneOrMore(View<Token> view,
-            Function<View<Token>, ParserResult<A>> parser
-    ) {
-        return oneOrMoreSeparatedBy(view, parser, Optional.empty());
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
     // Always succeeds, defaulting to the empty optional if error.
     public static <A> ParserResult<Optional<A>> optional(
             View<Token> view,
@@ -116,5 +115,5 @@ public class Parse {
         }
         return ParserResult.ok(Optional.of(result.getValue()), result.getRemaining());
     }
+    // -----------------------------------------------------------------------------------------------------------------
 }
-// ---------------------------------------------------------------------------------------------------------------------

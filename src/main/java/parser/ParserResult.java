@@ -4,11 +4,13 @@ import tokenizer.Token;
 import util.View;
 
 public class ParserResult<A> {
+    // -----------------------------------------------------------------------------------------------------------------
     private final boolean isSuccessful;
     private final A value;
     private final View<Token> remaining;
     private final String message;
 
+    // -----------------------------------------------------------------------------------------------------------------
     private ParserResult(boolean isSuccessful, A value, View<Token> remaining, String message) {
         this.isSuccessful = isSuccessful;
         this.value = value;
@@ -16,14 +18,7 @@ public class ParserResult<A> {
         this.message = message;
     }
 
-    public static <A> ParserResult<A> ok(A value, View<Token> remaining) {
-        return new ParserResult<>(true, value, remaining, "");
-    }
-
-    public static <A> ParserResult<A> error(View<Token> remaining, String message) {
-        return new ParserResult<>(false, null, remaining, message);
-    }
-
+    // -----------------------------------------------------------------------------------------------------------------
     public A getValue() {
         return value;
     }
@@ -43,4 +38,15 @@ public class ParserResult<A> {
     public Boolean isError() {
         return !isSuccessful;
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static <A> ParserResult<A> ok(A value, View<Token> remaining) {
+        return new ParserResult<>(true, value, remaining, "");
+    }
+
+    public static <A> ParserResult<A> error(View<Token> remaining, String message) {
+        return new ParserResult<>(false, null, remaining, message);
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+
 }

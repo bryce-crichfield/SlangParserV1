@@ -6,9 +6,10 @@ import parser.NodeVisitorAdapter;
 import parser.Number;
 
 public class NodePrinter extends NodeVisitorAdapter {
+    // -----------------------------------------------------------------------------------------------------------------
     private final StringBuilder sb = new StringBuilder();
     private int count = 0;
-
+    // -----------------------------------------------------------------------------------------------------------------
     private void indent() {
         count += 3;
     }
@@ -21,7 +22,7 @@ public class NodePrinter extends NodeVisitorAdapter {
         sb.append(".".repeat(Math.max(0, count)));
         sb.append(message).append("\n");
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     public void defaultEnter(Node node) {
         println(node.getClass().getSimpleName());
         indent();
@@ -30,7 +31,7 @@ public class NodePrinter extends NodeVisitorAdapter {
     public void defaultExit(Node node) {
         dedent();
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void exit(Number number) {
         println("value: " + number.value);
@@ -42,10 +43,11 @@ public class NodePrinter extends NodeVisitorAdapter {
         println("name: " + identifier.value);
         super.exit(identifier);
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     public String toString() {
 
         return sb.toString();
     }
+    // -----------------------------------------------------------------------------------------------------------------
 }
 

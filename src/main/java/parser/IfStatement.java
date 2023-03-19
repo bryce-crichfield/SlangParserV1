@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class IfStatement implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     public Expression condition;
     public Block thenBlock;
     public List<Block> elseIfBlocks = new ArrayList<>();
     public Optional<Block> elseBlock = Optional.empty();
 
+    // -----------------------------------------------------------------------------------------------------------------
     IfStatement(Expression condition, Block thenBlock, List<Block> elseIfBlocks, Optional<Block> elseBlock) {
         this.condition = condition;
         this.thenBlock = thenBlock;
@@ -21,6 +23,17 @@ public class IfStatement implements Node {
         this.elseBlock = elseBlock;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        condition.accept(visitor);
+        thenBlock.accept(visitor);
+        elseIfBlocks.forEach(block -> block.accept(visitor));
+        elseBlock.ifPresent(block -> block.accept(visitor));
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<IfStatement> parse(View<Token> view) {
         var ifToken = Parse.token(view.clone(), TokenKind.IF);
         if (ifToken.isError()) {
@@ -50,12 +63,16 @@ public class IfStatement implements Node {
         // Parse Zero Or More Else If Blocks
         var elseIfs = Parse.zeroOrMore(thenBlock.getRemaining(), IfStatement::parseElseIfBlock);
         var elseBlock = Parse.optional(elseIfs.getRemaining(), IfStatement::parseElseBlock);
-        var ifStatement = new IfStatement(expression.getValue(), thenBlock.getValue(), elseIfs.getValue(),
-                                          elseBlock.getValue()
+        var ifStatement = new IfStatement(
+                expression.getValue(),
+                thenBlock.getValue(),
+                elseIfs.getValue(),
+                elseBlock.getValue()
         );
         return ParserResult.ok(ifStatement, elseBlock.getRemaining());
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private static ParserResult<Block> parseElseIfBlock(View<Token> tokens) {
         var elseToken = Parse.token(tokens.clone(), TokenKind.ELSE);
         if (elseToken.isError()) {
@@ -75,6 +92,7 @@ public class IfStatement implements Node {
         return ParserResult.ok(block.getValue(), block.getRemaining());
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     private static ParserResult<Block> parseElseBlock(View<Token> tokens) {
         var elseToken = Parse.token(tokens.clone(), TokenKind.ELSE);
         if (elseToken.isError()) {
@@ -88,13 +106,5 @@ public class IfStatement implements Node {
 
         return ParserResult.ok(elseBlock.getValue(), elseBlock.getRemaining());
     }
-
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        condition.accept(visitor);
-        thenBlock.accept(visitor);
-        elseIfBlocks.forEach(block -> block.accept(visitor));
-        elseBlock.ifPresent(block -> block.accept(visitor));
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }

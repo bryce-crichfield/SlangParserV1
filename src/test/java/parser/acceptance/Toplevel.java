@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Toplevel implements AcceptanceTest {
+    // -----------------------------------------------------------------------------------------------------------------
     private static final Logger LOGGER = Logger.getLogger(Expressions.class.getName());
 
     @Override
     public Logger getLogger() {
         return LOGGER;
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testParameters() {
         var cases = new ArrayList<String>();
@@ -25,7 +26,7 @@ public class Toplevel implements AcceptanceTest {
         cases.add("()");
         assertAllOk(cases, Parameters::parse);
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testFunctionDefinition() {
         var cases = new ArrayList<String>();
@@ -35,7 +36,7 @@ public class Toplevel implements AcceptanceTest {
         cases.add("fn f() { abc = 1; def = 2; }");
         assertAllOk(cases, FunctionDeclaration::parse);
     }
-
+    // -----------------------------------------------------------------------------------------------------------------
     @Test
     void testDataDeclaration() {
         var cases = new ArrayList<String>();
@@ -44,4 +45,5 @@ public class Toplevel implements AcceptanceTest {
         cases.add("data A { x: num, y: num }");
         assertAllOk(cases, DataDeclaration::parse);
     }
+    // -----------------------------------------------------------------------------------------------------------------
 }

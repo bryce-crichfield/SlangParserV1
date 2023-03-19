@@ -7,12 +7,23 @@ import util.View;
 import static parser.Parse.token;
 
 public class TypeSpecifier implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     Identifier type;
 
+    // -----------------------------------------------------------------------------------------------------------------
     public TypeSpecifier(Identifier type) {
         this.type = type;
     }
 
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        type.accept(visitor);
+        visitor.exit(this);
+    }
+    // -----------------------------------------------------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<TypeSpecifier> parse(View<Token> view) {
         var colon = token(view, TokenKind.COLON);
         if (colon.isError()) {
@@ -26,11 +37,6 @@ public class TypeSpecifier implements Node {
 
         return ParserResult.ok(new TypeSpecifier(type.getValue()), type.getRemaining());
     }
+    // -----------------------------------------------------------------------------------------------------------------
 
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        type.accept(visitor);
-        visitor.exit(this);
-    }
 }

@@ -2,19 +2,19 @@ package parser;
 
 public abstract class NodeVisitorAdapter implements NodeVisitor {
 
-    public abstract void defaultEnter(Node node);
-
-    public abstract void defaultExit(Node node);
-
     @Override
     public void enter(Program program) {
         defaultEnter(program);
     }
 
+    public abstract void defaultEnter(Node node);
+
     @Override
     public void exit(Program program) {
         defaultExit(program);
     }
+
+    public abstract void defaultExit(Node node);
 
     @Override
     public void enter(FunctionDeclaration function) {
@@ -54,6 +54,26 @@ public abstract class NodeVisitorAdapter implements NodeVisitor {
     @Override
     public void exit(Statement statement) {
         defaultExit(statement);
+    }
+
+    @Override
+    public void enter(UseStatement useStatement) {
+        defaultEnter(useStatement);
+    }
+
+    @Override
+    public void exit(UseStatement useStatement) {
+        defaultExit(useStatement);
+    }
+
+    @Override
+    public void enter(ErrorStatement errorStatement) {
+        defaultEnter(errorStatement);
+    }
+
+    @Override
+    public void exit(ErrorStatement errorStatement) {
+        defaultExit(errorStatement);
     }
 
     @Override

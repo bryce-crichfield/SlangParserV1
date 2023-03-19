@@ -7,12 +7,23 @@ import util.View;
 import java.util.Optional;
 
 public class ReturnStatement implements Node {
+    // -----------------------------------------------------------------------------------------------------------------
     Optional<Expression> expression = Optional.empty();
+    // -----------------------------------------------------------------------------------------------------------------
 
     public ReturnStatement(Optional<Expression> expression) {
         this.expression = expression;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    @Override
+    public void accept(NodeVisitor visitor) {
+        visitor.enter(this);
+        expression.ifPresent(e -> e.accept(visitor));
+        visitor.exit(this);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<ReturnStatement> parse(View<Token> view) {
         var returnToken = Parse.token(view.clone(), TokenKind.RETURN);
         if (returnToken.isError()) {
@@ -28,11 +39,5 @@ public class ReturnStatement implements Node {
 
         return ParserResult.ok(new ReturnStatement(expression.getValue()), semicolon.getRemaining());
     }
-
-    @Override
-    public void accept(NodeVisitor visitor) {
-        visitor.enter(this);
-        expression.ifPresent(e -> e.accept(visitor));
-        visitor.exit(this);
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 }
