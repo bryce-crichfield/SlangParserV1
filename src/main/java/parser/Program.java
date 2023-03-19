@@ -1,6 +1,7 @@
 package parser;
 
 import tokenizer.Token;
+import util.Either;
 import util.View;
 
 import java.util.ArrayList;
@@ -41,22 +42,28 @@ public class Program implements Node {
         var data = new ArrayList<DataDeclaration>();
 
         while (true) {
-            var function = FunctionDeclaration.parse(remaining.clone());
-            if (function.isOk()) {
-                functions.add(function.getValue());
-                remaining = function.getRemaining();
-                continue;
+            var topDeclaration = parseTopDeclaration(remaining);
+            if (topDeclaration.isNeither()) {
+                break;
             }
 
-            var dataDeclaration = DataDeclaration.parse(remaining.clone());
-            if (dataDeclaration.isOk()) {
+            if (topDeclaration.isLeft()) {
+                var functionResult = topDeclaration.getLeft();
+                if (functionResult.isError()) {
+                    return ParserResult.error(remaining, functionResult.getMessage());
+                }
 
-                data.add(dataDeclaration.getValue());
-                remaining = dataDeclaration.getRemaining();
-                continue;
+                functions.add(functionResult.getValue());
+                remaining = functionResult.getRemaining();
+            } else {
+                var dataResult = topDeclaration.getRight();
+                if (dataResult.isError()) {
+                    return ParserResult.error(remaining, dataResult.getMessage());
+                }
+
+                data.add(dataResult.getValue());
+                remaining = dataResult.getRemaining();
             }
-
-            break;
         }
 
         if (!remaining.isEmpty()) {
@@ -70,4 +77,17 @@ public class Program implements Node {
         }
     }
     // -----------------------------------------------------------------------------------------------------------------
+    private static Either<ParserResult<FunctionDeclaration>, ParserResult<DataDeclaration>> parseTopDeclaration(View<Token> view) {
+        var function = FunctionDeclaration.parse(view);
+        if (function.isError()) {
+            var data = DataDeclaration.parse(view);
+            if (data.isError()) {
+                return Either.neither();
+            } else {
+                return Either.right(data);
+            }
+        } else {
+            return Either.left(function);
+        }
+    }
 }

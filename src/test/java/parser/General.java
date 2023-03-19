@@ -3,13 +3,19 @@ package parser;
 import analysis.NodePrinter;
 import org.junit.jupiter.api.Test;
 import tokenizer.Tokenizer;
+import util.FileUtils;
 
 public class General {
     @Test
     void test() {
-        var input = "fn add(a: num, b: num): num { return a + b; }";
-        var tokens = Tokenizer.tokenize(input);
-        var tree = FunctionDeclaration.parse(tokens);
+        var input = FileUtils.read("/home/bryce/Desktop/SlangCompiler/src/test/java/parser/general.txt");
+        if (input.isEmpty()) {
+            System.out.println("File not found");
+            return;
+        }
+
+        var tokens = Tokenizer.tokenize(input.get());
+        var tree = Program.parse(tokens);
         var printer = new NodePrinter();
         if (tree.isError()) {
             System.out.println("Error: " + tree.getMessage());
