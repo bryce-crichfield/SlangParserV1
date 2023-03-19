@@ -4,6 +4,7 @@ import tokenizer.Token;
 import tokenizer.TokenKind;
 import util.View;
 
+import java.util.List;
 import java.util.Optional;
 
 public class Expression implements Node {
@@ -50,22 +51,20 @@ public class Expression implements Node {
             return ParserResult.error(view, term.getMessage());
         }
 
-        var plus = Parse.token(term.getRemaining(), TokenKind.PLUS);
-        if (plus.isOk()) {
-            var expression = Expression.parse(plus.getRemaining());
-            if (expression.isOk()) {
-                var resultExpr = new Expression(expression.getValue(), TokenKind.PLUS, term.getValue());
-                return ParserResult.ok(resultExpr, expression.getRemaining());
+        // Try for any one of the operators
+        var operators = List.of(TokenKind.PLUS, TokenKind.MINUS, TokenKind.EQ, TokenKind.NEQ,
+                                TokenKind.LTEQ, TokenKind.LT, TokenKind.GT, TokenKind.GTEQ,
+                                TokenKind.AND, TokenKind.OR, TokenKind.POW
+        );
+        var operator = Parse.oneOfToken(term.getRemaining(), operators);
+        if (operator.isOk()) {
+            var expression = Expression.parse(operator.getRemaining());
+            if (expression.isError()) {
+                return ParserResult.error(view, expression.getMessage());
             }
-        }
 
-        var minus = Parse.token(term.getRemaining(), TokenKind.MINUS);
-        if (minus.isOk()) {
-            var expression = Expression.parse(minus.getRemaining());
-            if (expression.isOk()) {
-                var resultExpr = new Expression(expression.getValue(), TokenKind.MINUS, term.getValue());
-                return ParserResult.ok(resultExpr, expression.getRemaining());
-            }
+            var resultExpr = new Expression(expression.getValue(), operator.getValue(), term.getValue());
+            return ParserResult.ok(resultExpr, expression.getRemaining());
         }
 
         var expression = new Expression(term.getValue());

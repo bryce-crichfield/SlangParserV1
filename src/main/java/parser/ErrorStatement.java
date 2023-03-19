@@ -7,10 +7,12 @@ import util.View;
 public class ErrorStatement implements Node {
     // -----------------------------------------------------------------------------------------------------------------
     public Identifier identifier;
+
     // -----------------------------------------------------------------------------------------------------------------
     public ErrorStatement(Identifier identifier) {
         this.identifier = identifier;
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void accept(NodeVisitor visitor) {

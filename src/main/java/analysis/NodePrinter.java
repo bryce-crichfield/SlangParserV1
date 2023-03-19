@@ -9,28 +9,31 @@ public class NodePrinter extends NodeVisitorAdapter {
     // -----------------------------------------------------------------------------------------------------------------
     private final StringBuilder sb = new StringBuilder();
     private int count = 0;
-    // -----------------------------------------------------------------------------------------------------------------
-    private void indent() {
-        count += 3;
-    }
 
-    private void dedent() {
-        count -= 3;
-    }
-
-    private void println(String message) {
-        sb.append(".".repeat(Math.max(0, count)));
-        sb.append(message).append("\n");
-    }
     // -----------------------------------------------------------------------------------------------------------------
     public void defaultEnter(Node node) {
         println(node.getClass().getSimpleName());
         indent();
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    private void indent() {
+        count += 3;
+    }
+
+    private void println(String message) {
+        sb.append(".".repeat(Math.max(0, count)));
+        sb.append(message).append("\n");
+    }
+
     public void defaultExit(Node node) {
         dedent();
     }
+
+    private void dedent() {
+        count -= 3;
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void exit(Number number) {
@@ -43,6 +46,7 @@ public class NodePrinter extends NodeVisitorAdapter {
         println("name: " + identifier.value);
         super.exit(identifier);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public String toString() {
 

@@ -16,15 +16,6 @@ public class TokenizerResult {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    public static TokenizerResult ok(List<Token> tokens) {
-        return new TokenizerResult(true, tokens, "");
-    }
-
-    public static TokenizerResult error(String message) {
-        return new TokenizerResult(false, null, message);
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
     public Boolean isOk() {
         return isSuccessful;
     }
@@ -39,6 +30,15 @@ public class TokenizerResult {
 
     public String getMessage() {
         return message;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static TokenizerResult ok(List<Token> tokens) {
+        return new TokenizerResult(true, tokens, "");
+    }
+
+    public static TokenizerResult error(String message) {
+        return new TokenizerResult(false, null, message);
     }
     // -----------------------------------------------------------------------------------------------------------------
 

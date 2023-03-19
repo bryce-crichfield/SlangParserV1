@@ -65,6 +65,17 @@ public class Parse {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    public static ParserResult<TokenKind> oneOfToken(View<Token> view, List<TokenKind> kinds) {
+        for (var kind : kinds) {
+            var token = Parse.token(view.clone(), kind);
+            if (token.isOk()) {
+                return ParserResult.ok(kind, token.getRemaining());
+            }
+        }
+        return ParserResult.error(view, "Expected one of: " + kinds);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
     public static <A> ParserResult<List<A>> oneOrMore(View<Token> view,
             Function<View<Token>, ParserResult<A>> parser
     ) {

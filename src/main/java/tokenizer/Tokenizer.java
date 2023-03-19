@@ -17,6 +17,7 @@ public class Tokenizer {
         this.index = 0;
         this.output = new java.util.ArrayList<>();
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static View<Token> tokenize(String input) {
         var tokenizer = new Tokenizer(input);

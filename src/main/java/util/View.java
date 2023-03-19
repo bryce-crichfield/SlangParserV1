@@ -17,14 +17,6 @@ public class View<A> {
         this.end = end;
     }
 
-    public static <A> View<A> of(List<A> tokens) {
-        return new View<>(tokens, 0, tokens.size());
-    }
-
-    public static <A> View<A> empty() {
-        return new View<>(List.of(), 0, 0);
-    }
-
     public Optional<A> peek(int lookahead) {
         if (lookahead + start >= end) {
             return Optional.empty();
@@ -54,5 +46,13 @@ public class View<A> {
         for (var i = start; i < end; i++) {
             consumer.accept(data.get(i));
         }
+    }
+
+    public static <A> View<A> of(List<A> tokens) {
+        return new View<>(tokens, 0, tokens.size());
+    }
+
+    public static <A> View<A> empty() {
+        return new View<>(List.of(), 0, 0);
     }
 }

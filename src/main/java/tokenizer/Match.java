@@ -7,25 +7,6 @@ import java.util.function.Predicate;
 // TODO: Refactor to a View<Char> for more consistency
 interface Match {
     // -----------------------------------------------------------------------------------------------------------------
-    static Optional<Character> character(Predicate<Character> predicate, final char[] input, int start, int offset) {
-        Function<Character, Optional<Character>> mapper = c -> {
-            if (predicate.test(c)) {
-                return Optional.of(c);
-            }
-
-            return Optional.empty();
-        };
-
-        if (start + offset >= input.length) {
-            return Optional.empty();
-        }
-
-        var peeked = Optional.of(input[start + offset]);
-
-        return peeked.flatMap(mapper);
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
     static Optional<Token> keyword(String keyword, TokenKind kind, final char[] input, int start) {
         if (keyword.length() > input.length - start) {
             return Optional.empty();
@@ -60,6 +41,25 @@ interface Match {
         // Construct and Return Token
         var token = Token.of(TokenKind.IDENTIFIER, builder.toString(), start);
         return Optional.of(token);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    static Optional<Character> character(Predicate<Character> predicate, final char[] input, int start, int offset) {
+        Function<Character, Optional<Character>> mapper = c -> {
+            if (predicate.test(c)) {
+                return Optional.of(c);
+            }
+
+            return Optional.empty();
+        };
+
+        if (start + offset >= input.length) {
+            return Optional.empty();
+        }
+
+        var peeked = Optional.of(input[start + offset]);
+
+        return peeked.flatMap(mapper);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

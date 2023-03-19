@@ -10,10 +10,12 @@ import java.util.Optional;
 public class UseStatement implements Node {
     // -----------------------------------------------------------------------------------------------------------------
     public List<CompositeIdentifier> identifiers;
+
     // -----------------------------------------------------------------------------------------------------------------
     public UseStatement(List<CompositeIdentifier> identifiers) {
         this.identifiers = identifiers;
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public void accept(NodeVisitor visitor) {
@@ -21,6 +23,7 @@ public class UseStatement implements Node {
         identifiers.forEach(i -> i.accept(visitor));
         visitor.exit(this);
     }
+
     // -----------------------------------------------------------------------------------------------------------------
     public static ParserResult<UseStatement> parse(View<Token> view) {
         var useToken = Parse.token(view.clone(), TokenKind.USE);
